@@ -6,7 +6,7 @@
     <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/wBpGyGML/ai-image-9-1762361106607.jpg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grow With Haider - Complete AI Tools Platform</title>
+    <title>Grow With Haider - AI Tools Platform</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
             overflow-x: hidden;
         }
 
-        /* ============ LOGIN PAGE STYLES ============ */
+        /* ============ LOGIN PAGE ============ */
         #loginPage {
             display: flex;
             align-items: center;
@@ -170,7 +170,7 @@
             border-left: 4px solid #2e7d32;
         }
 
-        /* ============ MAIN APP STYLES ============ */
+        /* ============ MAIN APP ============ */
         #mainApp {
             display: none;
             padding: 0;
@@ -183,6 +183,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .logo {
@@ -205,6 +207,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .username {
@@ -221,6 +224,8 @@
             cursor: pointer;
             transition: all 0.3s;
             color: white;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-home {
@@ -229,6 +234,14 @@
 
         .btn-logout {
             background: #dc3545;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+        }
+
+        .btn-whatsapp:hover {
+            background: #1ea952;
         }
 
         .container {
@@ -254,6 +267,25 @@
         .header p {
             color: #666;
             font-size: 1.2em;
+        }
+
+        .channel-promo {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .channel-promo h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .channel-promo p {
+            margin-bottom: 15px;
+            opacity: 0.95;
         }
 
         .nav-tabs {
@@ -354,10 +386,6 @@
 
         .btn-danger {
             background: #dc3545;
-        }
-
-        .btn-info {
-            background: #17a2b8;
         }
 
         button:disabled {
@@ -644,11 +672,6 @@
             font-weight: 600;
         }
 
-        .badge-admin {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
         .badge-user {
             background: #e9ecef;
             color: #495057;
@@ -676,7 +699,7 @@
             <div class="hero-section">
                 <h1>🚀 Grow With Haider</h1>
                 <p>Professional AI Image Tools Platform</p>
-                <p style="font-size: 1.1em; opacity: 0.9;">Create stunning AI images, edit photos, generate prompts, and convert stories to visual scenes.</p>
+                <p style="font-size: 1.1em; opacity: 0.9;">Create stunning AI images, edit photos with AI, and convert stories to visual prompts.</p>
 
                 <div class="features">
                     <div class="feature-card">
@@ -688,12 +711,12 @@
                         <p>Transform and enhance your images with AI</p>
                     </div>
                     <div class="feature-card">
-                        <h3>📸 Image-to-Prompt</h3>
-                        <p>Upload images and get detailed AI prompts</p>
-                    </div>
-                    <div class="feature-card">
                         <h3>📝 Script-to-Prompt</h3>
                         <p>Convert stories into scene-by-scene prompts</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📱 WhatsApp Channel</h3>
+                        <p>Join our channel for updates and tips</p>
                     </div>
                 </div>
             </div>
@@ -767,6 +790,7 @@
             </div>
             <div class="user-menu">
                 <span class="username" id="displayUsername">User</span>
+                <a href="https://whatsapp.com/channel/0029VbBoEt19cDDiTAk69X2L" target="_blank" class="btn-top btn-whatsapp">📱 Join Channel</a>
                 <button class="btn-top btn-home" id="adminPanelBtn" style="display: none;">👑 Admin Panel</button>
                 <button class="btn-top btn-home" id="dashboardBtn" style="display: none;">🛠️ Dashboard</button>
                 <button class="btn-top btn-logout" onclick="logout()">🚪 Logout</button>
@@ -774,16 +798,24 @@
         </div>
 
         <div class="container">
+            <!-- WhatsApp Channel Promo -->
+            <div class="channel-promo">
+                <h3>📱 Join Grow With Haider WhatsApp Channel</h3>
+                <p>Get latest updates, tips, and exclusive content!</p>
+                <a href="https://whatsapp.com/channel/0029VbBoEt19cDDiTAk69X2L" target="_blank" class="btn-top btn-whatsapp" style="font-size: 16px; padding: 12px 30px;">
+                    Join Now - It's Free!
+                </a>
+            </div>
+
             <div class="header">
                 <h1 id="pageTitle">🎨 AI Tools Dashboard</h1>
                 <p id="pageSubtitle">Professional AI Image & Prompt Tools</p>
             </div>
 
-            <!-- Navigation Tabs -->
+            <!-- Navigation Tabs (3 TABS ONLY) -->
             <div class="nav-tabs" id="mainTabs">
                 <button class="tab-button active" onclick="switchMainTab('generator')">🎨 Image Generator</button>
                 <button class="tab-button" onclick="switchMainTab('editor')">🖼️ Image Editor</button>
-                <button class="tab-button" onclick="switchMainTab('imageToPrompt')">📸 Image-to-Prompt</button>
                 <button class="tab-button" onclick="switchMainTab('scriptToPrompt')">📝 Script-to-Prompt</button>
             </div>
 
@@ -837,7 +869,7 @@ A cute robot learning to paint"></textarea>
                 <div class="gallery" id="gallery"></div>
             </div>
 
-            <!-- TAB 2: IMAGE EDITOR -->
+            <!-- TAB 2: IMAGE EDITOR (4 MODES - NO BACKGROUND REMOVE) -->
             <div id="editorTab" class="tab-content">
                 <div class="upload-section" id="uploadSection">
                     <div class="upload-area" id="uploadArea">
@@ -881,7 +913,6 @@ A cute robot learning to paint"></textarea>
                                     <option value="variation">Create Variations</option>
                                     <option value="style">Style Transfer</option>
                                     <option value="enhance">Enhance Quality</option>
-                                    <option value="background">Remove Background</option>
                                     <option value="reimagine">AI Reimagine</option>
                                 </select>
                             </div>
@@ -914,44 +945,7 @@ A cute robot learning to paint"></textarea>
                 <div class="gallery" id="editorGallery"></div>
             </div>
 
-            <!-- TAB 3: IMAGE-TO-PROMPT (FIXED) -->
-            <div id="imageToPromptTab" class="tab-content">
-                <div class="config-section">
-                    <div class="info-box">
-                        <h4>📸 Image-to-Prompt Tool (AI Vision)</h4>
-                        <p>Upload an image and AI will analyze colors, composition, lighting, and subject to create accurate prompts.</p>
-                    </div>
-
-                    <div class="upload-section">
-                        <div class="upload-area" id="i2pUploadArea">
-                            <div class="upload-icon">🖼️</div>
-                            <div style="font-size: 1.2em; color: #666; margin-bottom: 10px;">Click to upload your image</div>
-                            <div style="color: #999; font-size: 0.9em;">Supports: JPG, PNG, WebP</div>
-                        </div>
-                        <input type="file" id="i2pFileInput" class="hidden-input" accept="image/*">
-                    </div>
-
-                    <div class="preview-area" id="i2pPreviewSection" style="display: none; margin: 20px 0;">
-                        <img id="i2pPreviewImage" class="preview-image" alt="Uploaded Image">
-                    </div>
-
-                    <div class="button-group">
-                        <button class="btn-primary" id="analyzeImageBtn" disabled>🔍 Analyze Image</button>
-                        <button class="btn-secondary" id="i2pClearBtn">🗑️ Clear</button>
-                    </div>
-
-                    <div class="prompt-output" id="i2pOutput" style="display: none;">
-                        <h3 style="color: #667eea; margin-bottom: 15px;">Generated Prompt:</h3>
-                        <div id="i2pPromptText" style="background: white; padding: 20px; border-radius: 8px; line-height: 1.8;"></div>
-                        <div class="button-group" style="margin-top: 15px;">
-                            <button class="btn-success" onclick="copyI2PPrompt()">📋 Copy Prompt</button>
-                            <button class="btn-info" onclick="generateFromI2P()">🎨 Generate Image</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 4: SCRIPT-TO-PROMPT (FIXED WITH STYLE) -->
+            <!-- TAB 3: SCRIPT-TO-PROMPT -->
             <div id="scriptToPromptTab" class="tab-content">
                 <div class="config-section">
                     <div class="info-box">
@@ -968,7 +962,7 @@ Outside, the city was bustling with people."></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label>🎨 Choose Style (Optional):</label>
+                        <label>🎨 Choose Style:</label>
                         <select id="scriptStyle">
                             <option value="cinematic">Cinematic (Realistic film-like)</option>
                             <option value="anime">Anime Style</option>
@@ -1049,9 +1043,7 @@ Outside, the city was bustling with people."></textarea>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="userTableBody">
-                                <!-- Users loaded here -->
-                            </tbody>
+                            <tbody id="userTableBody"></tbody>
                         </table>
                     </div>
 
@@ -1071,7 +1063,7 @@ Outside, the city was bustling with people."></textarea>
                         </div>
                         <div style="background: white; padding: 20px; border-radius: 10px;">
                             <h3 style="color: #667eea; margin-bottom: 10px;">🌐 Platform Info</h3>
-                            <p><strong>Version:</strong> 1.0.1 (Fixed)</p>
+                            <p><strong>Version:</strong> 1.0.2 (Clean)</p>
                             <p><strong>API:</strong> Pollinations.ai</p>
                         </div>
                     </div>
@@ -1101,10 +1093,8 @@ Outside, the city was bustling with people."></textarea>
         let resultImages = [];
         let isGenerating = false;
         let shouldStop = false;
-        let i2pGeneratedPrompt = '';
         let s2pGeneratedPrompts = [];
         let allUsers = [];
-        let uploadedImageForAnalysis = null; // Store image for better analysis
 
         // ==================== INITIALIZATION ====================
         window.addEventListener('DOMContentLoaded', () => {
@@ -1114,7 +1104,6 @@ Outside, the city was bustling with people."></textarea>
                 showMainApp();
             }
 
-            // Custom style toggle
             document.getElementById('scriptStyle').addEventListener('change', function() {
                 if (this.value === 'custom') {
                     document.getElementById('customStyleGroup').style.display = 'block';
@@ -1165,7 +1154,6 @@ Outside, the city was bustling with people."></textarea>
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
 
-            // Admin login
             if (username === 'GrowWithHaider' && password === 'HaiderAli369') {
                 currentUser = {
                     username: username,
@@ -1179,7 +1167,6 @@ Outside, the city was bustling with people."></textarea>
                 return;
             }
 
-            // Regular user login
             const users = JSON.parse(localStorage.getItem('gwh_users') || '[]');
             const user = users.find(u => u.username === username && u.password === password);
 
@@ -1272,6 +1259,7 @@ Outside, the city was bustling with people."></textarea>
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('pageTitle').textContent = '👑 Admin Control Panel';
             document.getElementById('pageSubtitle').textContent = 'Manage users and system settings';
+            document.querySelector('.channel-promo').style.display = 'none';
             loadUsers();
             updateStats();
         }
@@ -1281,6 +1269,7 @@ Outside, the city was bustling with people."></textarea>
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('pageTitle').textContent = '🎨 AI Tools Dashboard';
             document.getElementById('pageSubtitle').textContent = 'Professional AI Image & Prompt Tools';
+            document.querySelector('.channel-promo').style.display = 'block';
             switchMainTab('generator');
         }
 
@@ -1301,8 +1290,7 @@ Outside, the city was bustling with people."></textarea>
             const buttons = document.querySelectorAll('.tab-button');
             if (tabName === 'generator') buttons[0].classList.add('active');
             if (tabName === 'editor') buttons[1].classList.add('active');
-            if (tabName === 'imageToPrompt') buttons[2].classList.add('active');
-            if (tabName === 'scriptToPrompt') buttons[3].classList.add('active');
+            if (tabName === 'scriptToPrompt') buttons[2].classList.add('active');
         }
 
         // ==================== IMAGE GENERATOR ====================
@@ -1486,7 +1474,7 @@ Outside, the city was bustling with people."></textarea>
             }
         }
 
-        // ==================== IMAGE EDITOR (FIXED BACKGROUND REMOVE) ====================
+        // ==================== IMAGE EDITOR (4 MODES) ====================
         let uploadedImageData = null;
 
         document.getElementById('uploadArea').addEventListener('click', () => {
@@ -1533,7 +1521,6 @@ Outside, the city was bustling with people."></textarea>
                 if (mode === 'variation') await createVariations();
                 if (mode === 'style') await applyStyleTransfer();
                 if (mode === 'enhance') await enhanceImage();
-                if (mode === 'background') await removeBackground();
                 if (mode === 'reimagine') await reimagineImage();
                 document.getElementById('editorDownloadAllBtn').disabled = false;
             } catch (error) {
@@ -1574,14 +1561,6 @@ Outside, the city was bustling with people."></textarea>
             const prompt = 'Enhance the uploaded image, professional photography, sharp details';
             const url = buildImageUrl(prompt, aspectRatio, Date.now());
             await addResultToEditorGallery(url, 'Enhanced');
-        }
-
-        // FIXED: Better background remove prompt
-        async function removeBackground() {
-            const aspectRatio = document.getElementById('editorAspectRatio').value;
-            const prompt = 'Subject from image on pure white background, transparent cutout style, product photography, clean edges, isolated object, professional studio lighting, no shadows on background';
-            const url = buildImageUrl(prompt, aspectRatio, Date.now());
-            await addResultToEditorGallery(url, 'Background Removed');
         }
 
         async function reimagineImage() {
@@ -1668,111 +1647,7 @@ Outside, the city was bustling with people."></textarea>
             }
         });
 
-        // ==================== IMAGE-TO-PROMPT (FIXED - BETTER AI) ====================
-        document.getElementById('i2pUploadArea').addEventListener('click', () => {
-            document.getElementById('i2pFileInput').click();
-        });
-
-        document.getElementById('i2pFileInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    uploadedImageForAnalysis = e.target.result;
-                    document.getElementById('i2pPreviewImage').src = uploadedImageForAnalysis;
-                    document.getElementById('i2pPreviewSection').style.display = 'flex';
-                    document.getElementById('analyzeImageBtn').disabled = false;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // FIXED: Better image analysis with actual image processing
-        document.getElementById('analyzeImageBtn').addEventListener('click', () => {
-            showLoading('Analyzing image colors, composition, and elements...');
-            
-            // Analyze image using canvas
-            const img = document.getElementById('i2pPreviewImage');
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            ctx.drawImage(img, 0, 0);
-            
-            // Get image data for analysis
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            
-            // Analyze colors
-            let r = 0, g = 0, b = 0;
-            for (let i = 0; i < pixels.length; i += 40) {
-                r += pixels[i];
-                g += pixels[i + 1];
-                b += pixels[i + 2];
-            }
-            const samples = pixels.length / 40;
-            r = Math.floor(r / samples);
-            g = Math.floor(g / samples);
-            b = Math.floor(b / samples);
-            
-            setTimeout(() => {
-                // Determine dominant color tone
-                let colorTone = '';
-                if (r > g && r > b) colorTone = 'warm tones with red hues';
-                else if (b > r && b > g) colorTone = 'cool tones with blue hues';
-                else if (g > r && g > b) colorTone = 'natural green tones';
-                else colorTone = 'balanced neutral tones';
-                
-                // Determine brightness
-                const brightness = (r + g + b) / 3;
-                let lighting = '';
-                if (brightness > 200) lighting = 'bright, high-key lighting';
-                else if (brightness > 128) lighting = 'well-lit, balanced exposure';
-                else if (brightness > 64) lighting = 'moody, low-key lighting';
-                else lighting = 'dark, dramatic lighting';
-                
-                // Analyze aspect ratio for composition
-                const aspectRatio = canvas.width / canvas.height;
-                let composition = '';
-                if (aspectRatio > 1.5) composition = 'wide landscape composition';
-                else if (aspectRatio < 0.7) composition = 'tall portrait composition';
-                else composition = 'balanced square composition';
-                
-                // Generate realistic prompt based on analysis
-                const details = [
-                    'highly detailed',
-                    'professional photography',
-                    '4k quality',
-                    'sharp focus'
-                ];
-                
-                i2pGeneratedPrompt = `Professional photograph with ${colorTone}, ${lighting}, ${composition}, ${details.join(', ')}, photorealistic, depth of field`;
-                
-                document.getElementById('i2pPromptText').textContent = i2pGeneratedPrompt;
-                document.getElementById('i2pOutput').style.display = 'block';
-                hideLoading();
-            }, 2000);
-        });
-
-        document.getElementById('i2pClearBtn').addEventListener('click', () => {
-            document.getElementById('i2pFileInput').value = '';
-            document.getElementById('i2pPreviewSection').style.display = 'none';
-            document.getElementById('i2pOutput').style.display = 'none';
-            document.getElementById('analyzeImageBtn').disabled = true;
-            uploadedImageForAnalysis = null;
-        });
-
-        function copyI2PPrompt() {
-            navigator.clipboard.writeText(i2pGeneratedPrompt).then(() => alert('Prompt copied!'));
-        }
-
-        function generateFromI2P() {
-            switchMainTab('generator');
-            document.getElementById('promptInput').value = i2pGeneratedPrompt;
-        }
-
-        // ==================== SCRIPT-TO-PROMPT (FIXED WITH STYLE OPTIONS) ====================
+        // ==================== SCRIPT-TO-PROMPT ====================
         document.getElementById('convertScriptBtn').addEventListener('click', () => {
             const scriptText = document.getElementById('scriptInput').value.trim();
             
@@ -1787,7 +1662,6 @@ Outside, the city was bustling with people."></textarea>
                 const sentences = scriptText.split(/[.!?]+/).filter(s => s.trim().length > 0);
                 s2pGeneratedPrompts = [];
                 
-                // Get selected style
                 let styleText = '';
                 const selectedStyle = document.getElementById('scriptStyle').value;
                 
@@ -1825,7 +1699,7 @@ Outside, the city was bustling with people."></textarea>
                         <p><strong>Full Prompt:</strong> ${scenePrompt}</p>
                         <div style="margin-top: 10px;">
                             <button class="btn-small btn-success" onclick="copyScenePrompt(${index})">📋 Copy</button>
-                            <button class="btn-small btn-info" onclick="generateScene(${index})">🎨 Generate</button>
+                            <button class="btn-small btn-primary" onclick="generateScene(${index})">🎨 Generate</button>
                         </div>
                     `;
                     container.appendChild(item);
@@ -1951,10 +1825,10 @@ Outside, the city was bustling with people."></textarea>
         document.getElementById('clearBtn').addEventListener('click', clearGallery);
         document.getElementById('downloadAllBtn').addEventListener('click', downloadAllImages);
 
-        console.log('🚀 GWH Platform v1.0.1 (All Issues Fixed!) Loaded');
-        console.log('✅ Image-to-Prompt: AI color/composition analysis');
-        console.log('✅ Script-to-Prompt: Custom style selector');
-        console.log('✅ Background Remove: Improved prompt');
+        console.log('🚀 GWH Platform v1.0.2 (Clean Version) Loaded');
+        console.log('✅ 3 Tools: Generator, Editor (4 modes), Script-to-Prompt');
+        console.log('✅ WhatsApp Channel Link Added');
+        console.log('❌ Removed: Image-to-Prompt, Background Remove');
     </script>
 </body>
 </html>
