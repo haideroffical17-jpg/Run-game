@@ -773,3 +773,180 @@
 	</script>
 	<script src="https://img1.wsimg.com/traffic-assets/js/tccl.min.js"></script>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocloner: Free Instant AI Voice Cloning</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { background-color: #fff; color: #000; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; margin-top: 15px; }
+    header { overflow: hidden; padding: 10px 0; }
+    .logo { float: left; }
+    .logo img { max-width: 150px; }
+    .menu { float: right; }
+    .menu-toggle { display: none; font-size: 28px; cursor: pointer; margin-right: 0px; margin-top: -6px; }
+    nav ul { display: inline-block; list-style: none; }
+    nav ul li { display: inline-block; margin-left: 20px; }
+    nav ul li a { text-decoration: none; color: #000; font-weight: 600; }
+    .btn { background-color: #000; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-left: 20px; }
+    .hero { display: flex; align-items: center; justify-content: space-between; padding: 30px 0; }
+    .hero-text { flex: 1; padding-right: 30px; }
+    .hero-text h1 { font-size: 48px; margin-bottom: 20px; }
+    .hero-text p { font-size: 18px; margin-bottom: 30px; }
+    .btn-group { display: flex; gap: 20px; }
+    .btn-black { background-color: #000; color: #fff; }
+    .btn-white { background-color: #fff; color: #000; border: 2px solid #000; }
+    .btn-white:hover { background-color: #000; color: #fff; }
+    .hero-image { flex: 1; text-align: right; }
+    .hero-image img { max-width: 90%; }
+    .examples { padding: 60px 0; text-align: center; }
+    .examples h2 { font-size: 32px; margin-bottom: 40px; }
+    .example-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .example-item { background-color: #f9f9f9; padding: 20px; border-radius: 10px; text-align: center; }
+    .avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 10px; }
+    .audio-player { width: 100%; max-width: 350px; margin: 0 auto; background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
+    .controls { display: flex; align-items: center; justify-content: space-between; }
+    .play-pause { background: #000; color: #fff; border: none; font-size: 16px; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+    .play-pause:hover { background: #333; }
+    .progress-container { flex-grow: 1; height: 5px; background: #e0e0e0; border-radius: 5px; margin: 0 10px; position: relative;}
+    .progress-bar { height: 100%; width: 0; background: #000; border-radius: 5px;}
+    .duration { font-size: 14px; color: #666; }
+    footer { text-align: center; padding: 20px 0; border-top: 1px solid #e0e0e0; margin-top: 40px;}
+    footer p { color: #222; }
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; position: absolute; right: 20px; }
+      .menu { float: none; text-align: center; }
+      nav ul { display: none; text-align: center; flex-direction: column; }
+      nav ul.show { display: block; padding-top: 10px;}
+      nav ul li { margin: 10px 0; display: block; width: 100%; }
+      .hero { flex-direction: column; text-align: center; }
+      .hero-text { padding-right: 0; }
+      .hero-image { text-align: center; margin-top: 20px;}
+      .btn-group { flex-direction: column; margin: 0 auto; width: 100%; max-width: 350px;}
+      .btn-group a { margin: 10px 0; width: 100%; }
+      .example-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <a href="https://vocloner.com"><img src="oie_transparent (1).png" alt="Vocloner Logo"></a>
+      </div>
+      <div class="menu">
+        <span class="menu-toggle" onclick="toggleMenu()">☰</span>
+        <nav>
+          <ul id="nav-list">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="blog.php">Blog</a></li>
+            <li><a href="login.php" class="btn">Login</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <section class="hero">
+    <div class="container hero">
+      <div class="hero-text">
+        <h1>Vocloner: Free Instant AI Voice Cloning</h1>
+        <p>Experience the most advanced AI voice cloning technology. Create, share, and listen to cloned voices instantly.</p>
+        <div class="btn-group">
+          <a href="google.php" class="btn btn-black"><i class="fab fa-google"></i> Sign in with Google</a>
+          <a href="#examples" class="btn btn-white">View Examples</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="cloned-bg (1).png">
+      </div>
+    </div>
+  </section>
+  <!-- Example Section -->
+  <section class="examples" id="examples">
+    <div class="container">
+      <h2>Cloned Voice Examples</h2>
+      <div class="example-grid">
+        <!-- Example Audio Items Go Here -->
+        <div class="example-item">
+          <img src="trump.jpg" alt="Donald Trump" class="avatar">
+          <h3>Donald Trump</h3>
+          <div class="audio-player">
+            <audio id="audio1" src="edc588de82dd40588df038ae3d80cfe9 (1).mp3"></audio>
+            <div class="controls">
+              <button class="play-pause" onclick="togglePlay('audio1', this)">
+                <i class="fas fa-play"></i>
+              </button>
+              <div class="progress-container"><div class="progress-bar" id="progress1"></div></div>
+              <span class="duration" id="duration1">0:00</span>
+            </div>
+          </div>
+        </div>
+        <!-- More example-item blocks... -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal example (if you want CUSTOM popups, not new tab) -->
+  <button onclick="openMyModal()" style="margin:20px">Open Modal in Same Tab</button>
+  <div id="myModal" style="display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);background:white;padding:30px;box-shadow:0 4px 20px #222;border-radius:10px;z-index:999;">
+    <h3>Modal Content, sab kuch isi tab per!</h3>
+    <button onclick="closeMyModal()">Close</button>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p style="font-size:0.9em; color:black;">© 2025 Vocloner - <a href="privacy.php" style="color:black;">Privacy</a> - <a href="terms.php" style="color:black;">Terms of Service/ Refund Policy</a></p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      var navList = document.getElementById("nav-list");
+      if (navList.classList.contains("show")) {
+        navList.classList.remove("show");
+      } else {
+        navList.classList.add("show");
+      }
+    }
+    function togglePlay(audioId, button) {
+      const audio = document.getElementById(audioId);
+      const progress = document.getElementById('progress' + audioId.replace('audio', ''));
+      const durationLabel = document.getElementById('duration' + audioId.replace('audio', ''));
+      if (audio.paused) {
+        audio.play();
+        button.innerHTML = '<i class="fas fa-pause"></i>';
+      } else {
+        audio.pause();
+        button.innerHTML = '<i class="fas fa-play"></i>';
+      }
+      audio.addEventListener('timeupdate', function() {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progress.style.width = percent + '%';
+        durationLabel.textContent = formatTime(audio.currentTime);
+      });
+      audio.addEventListener('ended', function() {
+        button.innerHTML = '<i class="fas fa-play"></i>';
+      });
+    }
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+    // Modal functions:
+    function openMyModal() {
+      document.getElementById("myModal").style.display = "block";
+    }
+    function closeMyModal() {
+      document.getElementById("myModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
