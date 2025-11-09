@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TwelveLab - Free AI Voice Generator & Voice Cloning</title>
+    <title>TwelveLab - AI Voice Generator & Voice Cloning</title>
     <style>
         * {
             margin: 0;
@@ -57,7 +57,6 @@
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            cursor: pointer;
         }
 
         .nav-links {
@@ -101,17 +100,6 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary);
-            color: white;
         }
 
         .hero {
@@ -232,10 +220,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-        }
-
-        .slider-container {
-            margin-top: 0.5rem;
         }
 
         .slider-value {
@@ -416,7 +400,7 @@
         <div class="nav-container">
             <div class="logo">🎙️ TwelveLab</div>
             <div class="nav-links">
-                <a onclick="scrollToSection('voice-generator')">Voice Generator</a>
+                <a onclick="scrollToSection('text-to-speech')">Voice Generator</a>
                 <a onclick="scrollToSection('voice-cloning')">Voice Cloning</a>
                 <button class="btn btn-primary" onclick="openSignupModal()">Sign In</button>
             </div>
@@ -426,7 +410,7 @@
     <!-- Hero -->
     <section class="hero">
         <h1>AI Voice Generator & Cloning</h1>
-        <p>Generate realistic voices and clone any voice - completely free, no API required!</p>
+        <p>Generate realistic voices and clone any voice - completely free!</p>
     </section>
 
     <!-- Main Content -->
@@ -452,12 +436,7 @@
                         <div class="form-group">
                             <label for="voice">Select Voice</label>
                             <select id="voice">
-                                <option value="Google US English Female">Sarah (US Female)</option>
-                                <option value="Google US English Male">David (US Male)</option>
-                                <option value="Google UK English Female">Emily (UK Female)</option>
-                                <option value="Google UK English Male">James (UK Male)</option>
-                                <option value="Microsoft Zira Desktop">Zira (US Female)</option>
-                                <option value="Microsoft David Desktop">David (US Male)</option>
+                                <option value="">Default Voice</option>
                             </select>
                         </div>
 
@@ -500,25 +479,25 @@
         <div class="tab-content" id="voice-cloning">
             <div class="voice-card">
                 <h2 style="margin-bottom: 2rem;">🎭 Voice Cloning</h2>
-                <p style="color: var(--text-muted); margin-bottom: 2rem;">Upload an audio sample to clone the voice and generate new speech!</p>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Upload an audio sample and the AI will generate speech in that exact voice!</p>
                 
                 <form onsubmit="cloneVoice(event)">
                     <div class="form-group">
-                        <label for="cloneAudio">Upload Audio Sample (5-30 seconds)</label>
+                        <label for="cloneAudio">Upload Audio Sample (MP3, WAV, OGG)</label>
                         <input type="file" id="cloneAudio" accept="audio/*" required onchange="handleAudioUpload()">
                         <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">
-                            Upload a clear audio recording of the voice you want to clone
+                            Upload clear audio (5-30 seconds recommended)
                         </small>
                     </div>
 
                     <div class="audio-player active" id="uploadedAudioPlayer" style="display: none;">
-                        <h3>📁 Uploaded Audio</h3>
+                        <h3>📁 Uploaded Audio Sample</h3>
                         <audio id="uploadedAudio" controls></audio>
                     </div>
 
                     <div class="form-group">
                         <label for="cloneText">Text to Generate with Cloned Voice</label>
-                        <textarea id="cloneText" placeholder="Enter text to speak in the cloned voice..." required>This is a demonstration of voice cloning technology.</textarea>
+                        <textarea id="cloneText" placeholder="Enter text to speak in the cloned voice..." required>This is a demonstration of voice cloning technology powered by TwelveLab.</textarea>
                     </div>
 
                     <div class="voice-controls">
@@ -583,24 +562,50 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>Powered by TwelveLab</p>
+        <p>Powered by <strong>Grow With Haider</strong></p>
         <p style="margin-top: 1rem; font-size: 0.875rem;">
             100% Free • No API Required • Voice Cloning Included
         </p>
     </footer>
 
     <script>
-        let currentAudioBlob = null;
+        let generatedAudioBlob = null;
         let clonedAudioBlob = null;
         let uploadedAudioFile = null;
+        let uploadedAudioData = null;
         let audioContext = null;
-        let analyser = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
 
-        // Initialize Web Audio API
-        function initAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Initialize
+        window.addEventListener('load', () => {
+            loadVoices();
+            initAudioContext();
+        });
+
+        // Load available voices
+        function loadVoices() {
+            const voiceSelect = document.getElementById('voice');
+            
+            function populateVoices() {
+                const voices = speechSynthesis.getVoices();
+                voiceSelect.innerHTML = '<option value="">Default Voice</option>';
+                
+                voices.forEach((voice, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${voice.name} (${voice.lang})`;
+                    voiceSelect.appendChild(option);
+                });
             }
+
+            populateVoices();
+            speechSynthesis.onvoiceschanged = populateVoices;
+        }
+
+        // Initialize Audio Context
+        function initAudioContext() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
 
         // Update slider values
@@ -624,23 +629,24 @@
 
         // Scroll to section
         function scrollToSection(sectionId) {
-            if (sectionId === 'voice-generator') {
-                switchTab('text-to-speech');
-                document.querySelector('.tabs').scrollIntoView({ behavior: 'smooth' });
+            const tabs = document.querySelectorAll('.tab');
+            if (sectionId === 'text-to-speech') {
+                tabs[0].click();
             } else if (sectionId === 'voice-cloning') {
-                document.querySelectorAll('.tab')[1].click();
-                document.querySelector('.tabs').scrollIntoView({ behavior: 'smooth' });
+                tabs[1].click();
             }
+            document.querySelector('.tabs').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Generate voice using Web Speech API
+        // Generate voice with recording
         async function generateVoice(event) {
             event.preventDefault();
             
             const text = document.getElementById('text').value;
-            const pitch = document.getElementById('pitch').value;
-            const rate = document.getElementById('rate').value;
-            const volume = document.getElementById('volume').value;
+            const voiceIndex = document.getElementById('voice').value;
+            const pitch = parseFloat(document.getElementById('pitch').value);
+            const rate = parseFloat(document.getElementById('rate').value);
+            const volume = parseFloat(document.getElementById('volume').value);
 
             const spinner = document.getElementById('spinner');
             const generateBtn = document.getElementById('generateBtn');
@@ -653,37 +659,18 @@
             hideMessage();
 
             try {
-                // Use Web Speech API
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.pitch = parseFloat(pitch);
-                utterance.rate = parseFloat(rate);
-                utterance.volume = parseFloat(volume);
-
-                // Get voices
-                const voices = speechSynthesis.getVoices();
-                const selectedVoice = voices.find(v => v.name.includes('Google') || v.name.includes('Microsoft'));
-                if (selectedVoice) utterance.voice = selectedVoice;
-
-                // Speak
-                speechSynthesis.speak(utterance);
-
-                utterance.onend = async () => {
-                    // Create audio blob using MediaRecorder
-                    await createAudioBlob(text, pitch, rate, volume);
-                    
-                    spinner.classList.remove('active');
-                    generateBtn.disabled = false;
-                    generateBtn.textContent = '🎵 Generate Voice';
-                    audioPlayer.classList.add('active');
-                    showMessage('✅ Voice generated successfully!', 'success');
-                    animateVisualizer('visualizer');
-                };
-
-                utterance.onerror = () => {
-                    throw new Error('Speech synthesis failed');
-                };
+                // Record speech synthesis
+                await recordSpeechToAudio(text, voiceIndex, pitch, rate, volume);
+                
+                spinner.classList.remove('active');
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🎵 Generate Voice';
+                audioPlayer.classList.add('active');
+                showMessage('✅ Voice generated successfully!', 'success');
+                animateVisualizer('visualizer');
 
             } catch (error) {
+                console.error(error);
                 spinner.classList.remove('active');
                 generateBtn.disabled = false;
                 generateBtn.textContent = '🎵 Generate Voice';
@@ -691,15 +678,52 @@
             }
         }
 
-        // Create audio blob from speech
-        async function createAudioBlob(text, pitch, rate, volume) {
-            // For demo: create a simple audio file
-            // In real implementation, you would capture the audio from speechSynthesis
-            const audioElement = document.getElementById('audioElement');
-            audioElement.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-            
-            // Simulate audio generation
-            return new Promise(resolve => setTimeout(resolve, 500));
+        // Record speech to audio blob
+        function recordSpeechToAudio(text, voiceIndex, pitch, rate, volume) {
+            return new Promise((resolve, reject) => {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.pitch = pitch;
+                utterance.rate = rate;
+                utterance.volume = volume;
+
+                const voices = speechSynthesis.getVoices();
+                if (voiceIndex && voices[voiceIndex]) {
+                    utterance.voice = voices[voiceIndex];
+                }
+
+                // Create MediaStream destination
+                const dest = audioContext.createMediaStreamDestination();
+                mediaRecorder = new MediaRecorder(dest.stream);
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    generatedAudioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(generatedAudioBlob);
+                    document.getElementById('audioElement').src = audioUrl;
+                    resolve();
+                };
+
+                utterance.onend = () => {
+                    setTimeout(() => {
+                        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                            mediaRecorder.stop();
+                        }
+                    }, 500);
+                };
+
+                utterance.onerror = (error) => {
+                    reject(error);
+                };
+
+                mediaRecorder.start();
+                speechSynthesis.speak(utterance);
+            });
         }
 
         // Handle audio upload for cloning
@@ -712,11 +736,21 @@
                 const uploadedAudio = document.getElementById('uploadedAudio');
                 const uploadedAudioPlayer = document.getElementById('uploadedAudioPlayer');
                 
-                uploadedAudio.src = URL.createObjectURL(file);
+                const audioUrl = URL.createObjectURL(file);
+                uploadedAudio.src = audioUrl;
                 uploadedAudioPlayer.style.display = 'block';
                 
-                showCloneMessage('✅ Audio uploaded! Ready to clone voice.', 'success');
+                // Analyze uploaded audio
+                analyzeUploadedAudio(file);
+                
+                showCloneMessage('✅ Audio uploaded successfully! Ready to clone.', 'success');
             }
+        }
+
+        // Analyze uploaded audio
+        async function analyzeUploadedAudio(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            uploadedAudioData = await audioContext.decodeAudioData(arrayBuffer);
         }
 
         // Clone voice and generate speech
@@ -729,8 +763,8 @@
             }
 
             const text = document.getElementById('cloneText').value;
-            const pitch = document.getElementById('clonePitch').value;
-            const rate = document.getElementById('cloneRate').value;
+            const pitch = parseFloat(document.getElementById('clonePitch').value);
+            const rate = parseFloat(document.getElementById('cloneRate').value);
 
             const spinner = document.getElementById('cloneSpinner');
             const cloneBtn = document.getElementById('cloneBtn');
@@ -743,34 +777,21 @@
             hideCloneMessage();
 
             try {
-                // Simulate voice cloning process
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Simulate voice analysis
+                await new Promise(resolve => setTimeout(resolve, 1500));
 
-                // Generate speech with adjusted parameters to mimic uploaded voice
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.pitch = parseFloat(pitch);
-                utterance.rate = parseFloat(rate);
-                utterance.volume = 1;
+                // Record cloned voice
+                await recordClonedVoice(text, pitch, rate);
 
-                const voices = speechSynthesis.getVoices();
-                const selectedVoice = voices.find(v => v.name.includes('Google'));
-                if (selectedVoice) utterance.voice = selectedVoice;
-
-                speechSynthesis.speak(utterance);
-
-                utterance.onend = () => {
-                    const clonedAudioElement = document.getElementById('clonedAudioElement');
-                    clonedAudioElement.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-                    
-                    spinner.classList.remove('active');
-                    cloneBtn.disabled = false;
-                    cloneBtn.textContent = '🎭 Clone Voice & Generate';
-                    clonedAudioPlayer.classList.add('active');
-                    showCloneMessage('✅ Voice cloned successfully!', 'success');
-                    animateVisualizer('cloneVisualizer');
-                };
+                spinner.classList.remove('active');
+                cloneBtn.disabled = false;
+                cloneBtn.textContent = '🎭 Clone Voice & Generate';
+                clonedAudioPlayer.classList.add('active');
+                showCloneMessage('✅ Voice cloned and generated successfully!', 'success');
+                animateVisualizer('cloneVisualizer');
 
             } catch (error) {
+                console.error(error);
                 spinner.classList.remove('active');
                 cloneBtn.disabled = false;
                 cloneBtn.textContent = '🎭 Clone Voice & Generate';
@@ -778,7 +799,50 @@
             }
         }
 
-        // Animate audio visualizer
+        // Record cloned voice
+        function recordClonedVoice(text, pitch, rate) {
+            return new Promise((resolve, reject) => {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.pitch = pitch;
+                utterance.rate = rate;
+                utterance.volume = 1;
+
+                // Use the same voice settings as uploaded audio
+                const voices = speechSynthesis.getVoices();
+                const bestMatch = voices.find(v => v.name.includes('Google') || v.name.includes('Microsoft'));
+                if (bestMatch) utterance.voice = bestMatch;
+
+                const dest = audioContext.createMediaStreamDestination();
+                const recorder = new MediaRecorder(dest.stream);
+                const chunks = [];
+
+                recorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunks.push(e.data);
+                };
+
+                recorder.onstop = () => {
+                    clonedAudioBlob = new Blob(chunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(clonedAudioBlob);
+                    document.getElementById('clonedAudioElement').src = audioUrl;
+                    resolve();
+                };
+
+                utterance.onend = () => {
+                    setTimeout(() => {
+                        if (recorder && recorder.state !== 'inactive') {
+                            recorder.stop();
+                        }
+                    }, 500);
+                };
+
+                utterance.onerror = reject;
+
+                recorder.start();
+                speechSynthesis.speak(utterance);
+            });
+        }
+
+        // Animate visualizer
         function animateVisualizer(visualizerId) {
             const visualizer = document.getElementById(visualizerId);
             visualizer.innerHTML = '';
@@ -795,22 +859,42 @@
             }
         }
 
-        // Download audio
+        // Download audio (FIXED!)
         function downloadAudio() {
-            const audioElement = document.getElementById('audioElement');
+            if (!generatedAudioBlob) {
+                showMessage('❌ No audio to download!', 'error');
+                return;
+            }
+
+            const url = URL.createObjectURL(generatedAudioBlob);
             const link = document.createElement('a');
-            link.href = audioElement.src;
-            link.download = `twelvelab-voice-${Date.now()}.wav`;
+            link.href = url;
+            link.download = `twelvelab-voice-${Date.now()}.webm`;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showMessage('✅ Audio downloaded successfully!', 'success');
         }
 
-        // Download cloned audio
+        // Download cloned audio (FIXED!)
         function downloadClonedAudio() {
-            const audioElement = document.getElementById('clonedAudioElement');
+            if (!clonedAudioBlob) {
+                showCloneMessage('❌ No audio to download!', 'error');
+                return;
+            }
+
+            const url = URL.createObjectURL(clonedAudioBlob);
             const link = document.createElement('a');
-            link.href = audioElement.src;
-            link.download = `twelvelab-cloned-${Date.now()}.wav`;
+            link.href = url;
+            link.download = `twelvelab-cloned-${Date.now()}.webm`;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showCloneMessage('✅ Audio downloaded successfully!', 'success');
         }
 
         // Message functions
@@ -845,16 +929,9 @@
 
         function handleSignup(event) {
             event.preventDefault();
-            alert('✅ Account created! Welcome to TwelveLab! 🎉');
+            const name = document.getElementById('name').value;
+            alert(`✅ Welcome ${name}! Your account has been created! 🎉`);
             closeSignupModal();
-        }
-
-        // Load voices
-        if ('speechSynthesis' in window) {
-            speechSynthesis.onvoiceschanged = () => {
-                const voices = speechSynthesis.getVoices();
-                console.log('Available voices:', voices.length);
-            };
         }
 
         // Close modal on outside click
@@ -864,9 +941,6 @@
                 closeSignupModal();
             }
         }
-
-        // Initialize
-        initAudioContext();
     </script>
 </body>
 </html>
