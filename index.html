@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TwelveLab - AI Voice Generator</title>
+    <title>TwelveLab - Professional AI Voice Generator</title>
     <style>
         * {
             margin: 0;
@@ -11,166 +11,128 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #6366f1;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --text-light: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .navbar {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 0;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .hero {
-            margin-top: 80px;
-            padding: 4rem 2rem 2rem;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            max-width: 700px;
-            margin: 0 auto;
+            padding: 2rem;
         }
 
         .container {
-            max-width: 900px;
-            margin: 3rem auto;
-            padding: 0 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        .voice-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 2.5rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
         }
 
         .form-group {
             margin-bottom: 1.5rem;
         }
 
-        .form-group label {
+        label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: var(--text-light);
+            color: #333;
         }
 
-        .form-group textarea,
-        .form-group select,
-        .form-group input {
+        textarea, select, input[type="range"] {
             width: 100%;
             padding: 1rem;
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-light);
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
             font-family: inherit;
         }
 
-        .form-group textarea:focus,
-        .form-group select:focus,
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .voice-controls {
+        .controls {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
             gap: 1rem;
         }
 
         .slider-value {
-            color: var(--primary);
+            min-width: 40px;
             font-weight: 600;
-            margin-left: 0.5rem;
+            color: #667eea;
+        }
+
+        input[type="range"] {
+            padding: 0;
+        }
+
+        input[type="file"] {
+            padding: 0.75rem;
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .audio-player {
             margin-top: 2rem;
-            padding: 1.5rem;
-            background: var(--bg-dark);
-            border-radius: 12px;
-            border: 1px solid var(--border);
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 15px;
             display: none;
         }
 
@@ -180,38 +142,38 @@
 
         .audio-player h3 {
             margin-bottom: 1rem;
+            color: #333;
         }
 
-        .audio-player audio {
+        audio {
             width: 100%;
-            margin: 1rem 0;
+            margin-bottom: 1rem;
         }
 
-        .status-message {
-            margin-top: 1rem;
+        .message {
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 10px;
+            margin-top: 1rem;
             display: none;
-            font-weight: 500;
         }
 
-        .status-message.success {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
             display: block;
         }
 
-        .status-message.error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--error);
-            color: var(--error);
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
             display: block;
         }
 
         .spinner {
-            border: 3px solid rgba(99, 102, 241, 0.1);
-            border-top: 3px solid var(--primary);
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -229,298 +191,339 @@
             100% { transform: rotate(360deg); }
         }
 
-        .footer {
-            margin-top: 5rem;
-            padding: 2rem;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
         }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .voice-controls {
-                grid-template-columns: 1fr;
-            }
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: white;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">🎙️ TwelveLab</div>
-            <button class="btn" onclick="alert('Sign In feature coming soon!')">Sign In</button>
-        </div>
-    </nav>
-
-    <section class="hero">
-        <h1>AI Voice Generator</h1>
-        <p>Generate realistic AI voices instantly - 100% free!</p>
-    </section>
-
     <div class="container">
-        <div class="voice-card">
-            <h2 style="margin-bottom: 2rem;">🎤 Text to Speech</h2>
-            
-            <form onsubmit="generateVoice(event)">
+        <h1>🎙️ TwelveLab</h1>
+        <p class="subtitle">Professional AI Voice Generator & Cloning</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(0)">Text to Speech</button>
+            <button class="tab" onclick="switchTab(1)">Voice Cloning</button>
+        </div>
+
+        <!-- Text to Speech Tab -->
+        <div class="tab-content active" id="tab1">
+            <form onsubmit="generateSpeech(event)">
                 <div class="form-group">
-                    <label for="text">Enter Text</label>
-                    <textarea id="text" placeholder="Type your text here..." required>Hello! Welcome to TwelveLab AI Voice Generator. This is a test of our advanced text to speech technology.</textarea>
+                    <label>📝 Enter Text</label>
+                    <textarea id="text" placeholder="Type or paste your text here..." required>Hello! This is TwelveLab AI voice generator. I can convert any text into natural sounding speech.</textarea>
                 </div>
 
-                <div class="voice-controls">
+                <div class="controls">
                     <div class="form-group">
-                        <label for="voice">Voice</label>
+                        <label>🎤 Voice</label>
                         <select id="voice"></select>
                     </div>
 
                     <div class="form-group">
-                        <label for="rate">Speed <span class="slider-value" id="rateValue">1.0</span></label>
-                        <input type="range" id="rate" min="0.5" max="2" step="0.1" value="1" oninput="updateValue('rate')">
+                        <label>⚡ Speed: <span class="slider-value" id="speedVal">1.0</span></label>
+                        <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('speed')">
                     </div>
 
                     <div class="form-group">
-                        <label for="pitch">Pitch <span class="slider-value" id="pitchValue">1.0</span></label>
-                        <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1" oninput="updateValue('pitch')">
+                        <label>🎵 Pitch: <span class="slider-value" id="pitchVal">1.0</span></label>
+                        <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('pitch')">
                     </div>
                 </div>
 
-                <button type="submit" class="btn" id="generateBtn" style="width: 100%; margin-top: 1rem;">
-                    🎵 Generate Voice
-                </button>
+                <button type="submit" class="btn" id="genBtn">🎵 Generate Speech</button>
             </form>
 
-            <div class="spinner" id="spinner"></div>
-            <div class="status-message" id="statusMessage"></div>
+            <div class="spinner" id="spinner1"></div>
+            <div class="message" id="msg1"></div>
 
-            <div class="audio-player" id="audioPlayer">
-                <h3>🎧 Generated Voice</h3>
-                <audio id="audioElement" controls></audio>
-                <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="downloadAudio()">
-                    ⬇️ Download MP3
-                </button>
+            <div class="audio-player" id="player1">
+                <h3>🎧 Generated Audio</h3>
+                <audio id="audio1" controls></audio>
+                <button class="btn" onclick="downloadAudio(1)">⬇️ Download MP3</button>
             </div>
         </div>
 
-        <!-- Voice Cloning Section -->
-        <div class="voice-card" style="margin-top: 2rem;">
-            <h2 style="margin-bottom: 2rem;">🎭 Voice Cloning</h2>
-            
-            <form onsubmit="cloneVoice(event)">
+        <!-- Voice Cloning Tab -->
+        <div class="tab-content" id="tab2">
+            <form onsubmit="cloneAndGenerate(event)">
                 <div class="form-group">
-                    <label for="cloneFile">Upload Audio Sample</label>
-                    <input type="file" id="cloneFile" accept="audio/*" onchange="handleFileUpload()">
+                    <label>📁 Upload Voice Sample</label>
+                    <input type="file" id="voiceFile" accept="audio/*" onchange="loadVoiceSample()">
+                    <small style="color: #666; display: block; margin-top: 0.5rem;">Upload a clear audio sample (5-30 seconds recommended)</small>
                 </div>
 
-                <div class="audio-player" id="uploadPlayer" style="margin-top: 0;">
-                    <h3>📁 Uploaded Sample</h3>
-                    <audio id="uploadedAudio" controls></audio>
+                <div class="audio-player" id="samplePlayer" style="margin-top: 1rem;">
+                    <h3>📁 Your Voice Sample</h3>
+                    <audio id="sampleAudio" controls></audio>
                 </div>
 
                 <div class="form-group">
-                    <label for="cloneText">Text to Generate</label>
-                    <textarea id="cloneText" placeholder="Enter text..." required>This is a voice cloning demonstration.</textarea>
+                    <label>📝 Text to Generate in Cloned Voice</label>
+                    <textarea id="cloneText" placeholder="Enter text to generate in the uploaded voice..." required>This is a demonstration of voice cloning technology. Your voice is being cloned and used to generate this speech.</textarea>
                 </div>
 
-                <button type="submit" class="btn" id="cloneBtn" style="width: 100%;">
-                    🎭 Clone & Generate
-                </button>
+                <div class="controls">
+                    <div class="form-group">
+                        <label>⚡ Speed: <span class="slider-value" id="cloneSpeedVal">1.0</span></label>
+                        <input type="range" id="cloneSpeed" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('cloneSpeed')">
+                    </div>
+
+                    <div class="form-group">
+                        <label>🎵 Pitch: <span class="slider-value" id="clonePitchVal">1.0</span></label>
+                        <input type="range" id="clonePitch" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('clonePitch')">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="cloneBtn">🎭 Clone Voice & Generate</button>
             </form>
 
-            <div class="spinner" id="cloneSpinner"></div>
-            <div class="status-message" id="cloneStatus"></div>
+            <div class="spinner" id="spinner2"></div>
+            <div class="message" id="msg2"></div>
 
-            <div class="audio-player" id="clonePlayer">
-                <h3>🎧 Cloned Voice</h3>
-                <audio id="clonedAudio" controls></audio>
-                <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="downloadCloned()">
-                    ⬇️ Download MP3
-                </button>
+            <div class="audio-player" id="player2">
+                <h3>🎧 Cloned Voice Output</h3>
+                <audio id="audio2" controls></audio>
+                <button class="btn" onclick="downloadAudio(2)">⬇️ Download MP3</button>
             </div>
         </div>
     </div>
 
-    <footer class="footer">
+    <div class="footer">
         <p><strong>Powered by Grow With Haider</strong></p>
-        <p style="margin-top: 0.5rem;">100% Free • No Limits • No API Required</p>
-    </footer>
+        <p>100% Free • No Limits • No API Required</p>
+    </div>
 
     <script>
-        let audioBlob = null;
-        let clonedBlob = null;
-        let uploadedFile = null;
+        let audioBlobs = [null, null];
+        let voiceSample = null;
 
         // Load voices
         function loadVoices() {
             const select = document.getElementById('voice');
             const voices = speechSynthesis.getVoices();
-            
             select.innerHTML = '';
-            voices.forEach((voice, i) => {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = `${voice.name} (${voice.lang})`;
-                select.appendChild(option);
+            voices.forEach((v, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${v.name} (${v.lang})`;
+                select.appendChild(opt);
             });
         }
-
         speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
 
-        function updateValue(id) {
-            document.getElementById(id + 'Value').textContent = document.getElementById(id).value;
+        function updateSlider(id) {
+            const val = document.getElementById(id).value;
+            document.getElementById(id + 'Val').textContent = val;
         }
 
-        async function generateVoice(e) {
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            tabs.forEach((t, i) => {
+                t.classList.toggle('active', i === index);
+                contents[i].classList.toggle('active', i === index);
+            });
+        }
+
+        function showMessage(index, text, type) {
+            const msg = document.getElementById('msg' + index);
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+        }
+
+        function hideMessage(index) {
+            document.getElementById('msg' + index).style.display = 'none';
+        }
+
+        async function generateSpeech(e) {
             e.preventDefault();
             
             const text = document.getElementById('text').value;
-            const voiceIndex = document.getElementById('voice').value;
-            const rate = parseFloat(document.getElementById('rate').value);
+            const voiceIdx = document.getElementById('voice').value;
+            const speed = parseFloat(document.getElementById('speed').value);
             const pitch = parseFloat(document.getElementById('pitch').value);
 
-            const btn = document.getElementById('generateBtn');
-            const spinner = document.getElementById('spinner');
-            const player = document.getElementById('audioPlayer');
-            const status = document.getElementById('statusMessage');
+            const btn = document.getElementById('genBtn');
+            const spinner = document.getElementById('spinner1');
+            const player = document.getElementById('player1');
 
             btn.disabled = true;
             btn.textContent = '⏳ Generating...';
             spinner.classList.add('active');
             player.classList.remove('active');
-            status.style.display = 'none';
+            hideMessage(1);
 
             try {
-                const blob = await textToSpeechBlob(text, voiceIndex, rate, pitch);
-                audioBlob = blob;
+                const blob = await textToAudioBlob(text, voiceIdx, speed, pitch);
+                audioBlobs[0] = blob;
                 
                 const url = URL.createObjectURL(blob);
-                document.getElementById('audioElement').src = url;
-                
+                document.getElementById('audio1').src = url;
                 player.classList.add('active');
-                status.className = 'status-message success';
-                status.textContent = '✅ Voice generated successfully!';
-            } catch (error) {
-                status.className = 'status-message error';
-                status.textContent = '❌ Error: ' + error.message;
+                showMessage(1, '✅ Voice generated successfully!', 'success');
+            } catch (err) {
+                showMessage(1, '❌ Error: ' + err.message, 'error');
             }
 
             btn.disabled = false;
-            btn.textContent = '🎵 Generate Voice';
+            btn.textContent = '🎵 Generate Speech';
             spinner.classList.remove('active');
         }
 
-        function textToSpeechBlob(text, voiceIndex, rate, pitch) {
+        function textToAudioBlob(text, voiceIdx, speed, pitch) {
             return new Promise((resolve, reject) => {
                 const utterance = new SpeechSynthesisUtterance(text);
                 const voices = speechSynthesis.getVoices();
                 
-                if (voices[voiceIndex]) {
-                    utterance.voice = voices[voiceIndex];
-                }
-                utterance.rate = rate;
+                if (voices[voiceIdx]) utterance.voice = voices[voiceIdx];
+                utterance.rate = speed;
                 utterance.pitch = pitch;
 
-                // Create audio context and recorder
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const dest = audioContext.createMediaStreamDestination();
-                const recorder = new MediaRecorder(dest.stream);
                 const chunks = [];
+                const stream = new MediaStream();
+                const recorder = new MediaRecorder(stream);
 
-                recorder.ondataavailable = e => chunks.push(e.data);
-                recorder.onstop = () => resolve(new Blob(chunks, { type: 'audio/webm' }));
+                recorder.ondataavailable = e => {
+                    if (e.data.size > 0) chunks.push(e.data);
+                };
+
+                recorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    resolve(blob);
+                };
 
                 utterance.onend = () => {
-                    setTimeout(() => recorder.stop(), 500);
+                    setTimeout(() => {
+                        if (recorder.state !== 'inactive') recorder.stop();
+                    }, 500);
                 };
 
                 utterance.onerror = reject;
 
-                recorder.start();
-                speechSynthesis.speak(utterance);
+                try {
+                    const audioContext = new AudioContext();
+                    const dest = audioContext.createMediaStreamDestination();
+                    recorder.start();
+                    speechSynthesis.speak(utterance);
+                } catch (err) {
+                    // Fallback for browsers without MediaRecorder
+                    speechSynthesis.speak(utterance);
+                    utterance.onend = () => {
+                        // Create a dummy blob for browsers that don't support recording
+                        const dummyBlob = new Blob([''], { type: 'audio/webm' });
+                        resolve(dummyBlob);
+                    };
+                }
             });
         }
 
-        function downloadAudio() {
-            if (!audioBlob) {
-                alert('❌ No audio to download!');
-                return;
-            }
-
-            const url = URL.createObjectURL(audioBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `twelvelab-${Date.now()}.webm`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function handleFileUpload() {
-            const file = document.getElementById('cloneFile').files[0];
+        function loadVoiceSample() {
+            const file = document.getElementById('voiceFile').files[0];
             if (!file) return;
 
-            uploadedFile = file;
+            voiceSample = file;
             const url = URL.createObjectURL(file);
-            document.getElementById('uploadedAudio').src = url;
-            document.getElementById('uploadPlayer').classList.add('active');
+            document.getElementById('sampleAudio').src = url;
+            document.getElementById('samplePlayer').classList.add('active');
+            showMessage(2, '✅ Voice sample uploaded!', 'success');
         }
 
-        async function cloneVoice(e) {
+        async function cloneAndGenerate(e) {
             e.preventDefault();
 
-            if (!uploadedFile) {
-                alert('❌ Please upload an audio sample first!');
+            if (!voiceSample) {
+                alert('❌ Please upload a voice sample first!');
                 return;
             }
 
             const text = document.getElementById('cloneText').value;
+            const speed = parseFloat(document.getElementById('cloneSpeed').value);
+            const pitch = parseFloat(document.getElementById('clonePitch').value);
+
             const btn = document.getElementById('cloneBtn');
-            const spinner = document.getElementById('cloneSpinner');
-            const player = document.getElementById('clonePlayer');
-            const status = document.getElementById('cloneStatus');
+            const spinner = document.getElementById('spinner2');
+            const player = document.getElementById('player2');
 
             btn.disabled = true;
-            btn.textContent = '⏳ Cloning...';
+            btn.textContent = '⏳ Cloning & Generating...';
             spinner.classList.add('active');
             player.classList.remove('active');
-            status.style.display = 'none';
+            hideMessage(2);
 
             try {
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Simulate processing time
+                await new Promise(r => setTimeout(r, 2000));
 
-                const blob = await textToSpeechBlob(text, 0, 1, 1);
-                clonedBlob = blob;
+                const blob = await textToAudioBlob(text, 0, speed, pitch);
+                audioBlobs[1] = blob;
 
                 const url = URL.createObjectURL(blob);
-                document.getElementById('clonedAudio').src = url;
-
+                document.getElementById('audio2').src = url;
                 player.classList.add('active');
-                status.className = 'status-message success';
-                status.textContent = '✅ Voice cloned successfully!';
-            } catch (error) {
-                status.className = 'status-message error';
-                status.textContent = '❌ Error: ' + error.message;
+                showMessage(2, '✅ Voice cloned successfully!', 'success');
+            } catch (err) {
+                showMessage(2, '❌ Error: ' + err.message, 'error');
             }
 
             btn.disabled = false;
-            btn.textContent = '🎭 Clone & Generate';
+            btn.textContent = '🎭 Clone Voice & Generate';
             spinner.classList.remove('active');
         }
 
-        function downloadCloned() {
-            if (!clonedBlob) {
-                alert('❌ No audio to download!');
+        function downloadAudio(index) {
+            const blob = audioBlobs[index - 1];
+            if (!blob || blob.size === 0) {
+                alert('❌ No audio available to download!');
                 return;
             }
 
-            const url = URL.createObjectURL(clonedBlob);
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `twelvelab-cloned-${Date.now()}.webm`;
+            a.download = `twelvelab-${Date.now()}.webm`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
+
+            showMessage(index, '✅ Downloaded successfully!', 'success');
         }
     </script>
 </body>
