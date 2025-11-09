@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TwelveLab - AI Voice Generator</title>
+    <title>TwelveLab - Professional Voice Generator</title>
     <style>
         * {
             margin: 0;
@@ -30,8 +30,15 @@
         h1 {
             text-align: center;
             color: #667eea;
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem;
             font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
         }
 
         .form-group {
@@ -45,7 +52,7 @@
             color: #333;
         }
 
-        textarea, select {
+        textarea, select, input {
             width: 100%;
             padding: 1rem;
             border: 2px solid #e0e0e0;
@@ -59,32 +66,9 @@
             resize: vertical;
         }
 
-        textarea:focus, select:focus {
+        textarea:focus, select:focus, input:focus {
             outline: none;
             border-color: #667eea;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .slider-group label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .slider-value {
-            color: #667eea;
-            font-weight: 700;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            margin-top: 0.5rem;
         }
 
         .btn {
@@ -123,6 +107,7 @@
 
         .player h3 {
             margin-bottom: 1rem;
+            color: #333;
         }
 
         audio {
@@ -176,44 +161,49 @@
             color: white;
         }
 
-        @media (max-width: 600px) {
-            .controls {
-                grid-template-columns: 1fr;
-            }
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .info-box strong {
+            color: #856404;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎙️ TwelveLab Voice Generator</h1>
+        <p class="subtitle">Professional AI Text-to-Speech with Real Audio Download</p>
 
-        <form onsubmit="generate(event)">
+        <div class="info-box">
+            <strong>⚠️ Using Free TTS API:</strong> This tool uses Google's free TTS service via ResponsiveVoice. No API key needed!
+        </div>
+
+        <form onsubmit="generateVoice(event)">
             <div class="form-group">
                 <label>📝 Enter Your Text</label>
-                <textarea id="text" required placeholder="Type your text here...">Hello! Welcome to TwelveLab AI voice generator. This tool can convert any text into natural sounding speech instantly.</textarea>
+                <textarea id="text" required placeholder="Type your text here...">Hello! This is TwelveLab AI voice generator. I can convert your text into natural sounding speech and provide a downloadable audio file.</textarea>
             </div>
 
             <div class="form-group">
                 <label>🎤 Select Voice</label>
-                <select id="voice"></select>
-            </div>
-
-            <div class="controls">
-                <div class="slider-group">
-                    <label>
-                        ⚡ Speed
-                        <span class="slider-value" id="speedVal">1.0</span>
-                    </label>
-                    <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1" oninput="updateVal('speed')">
-                </div>
-
-                <div class="slider-group">
-                    <label>
-                        🎵 Pitch
-                        <span class="slider-value" id="pitchVal">1.0</span>
-                    </label>
-                    <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1" oninput="updateVal('pitch')">
-                </div>
+                <select id="voice">
+                    <option value="UK English Female">UK English Female</option>
+                    <option value="UK English Male">UK English Male</option>
+                    <option value="US English Female">US English Female</option>
+                    <option value="US English Male">US English Male</option>
+                    <option value="Arabic Female">Arabic Female</option>
+                    <option value="Chinese Female">Chinese Female</option>
+                    <option value="French Female">French Female</option>
+                    <option value="German Female">German Female</option>
+                    <option value="Hindi Female">Hindi Female</option>
+                    <option value="Spanish Female">Spanish Female</option>
+                </select>
             </div>
 
             <button type="submit" class="btn" id="btn">🎵 Generate Voice</button>
@@ -225,48 +215,26 @@
         <div class="player" id="player">
             <h3>🎧 Generated Audio</h3>
             <audio id="audio" controls></audio>
-            <button class="btn" onclick="download()">⬇️ Download Audio</button>
+            <button class="btn" onclick="downloadAudio()">⬇️ Download MP3</button>
         </div>
     </div>
 
     <div class="footer">
         <p><strong>Powered by Grow With Haider</strong></p>
-        <p style="margin-top: 0.5rem;">100% Free • No API Required</p>
+        <p style="margin-top: 0.5rem;">100% Free • Real Voice • Downloadable</p>
     </div>
 
+    <!-- ResponsiveVoice API -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=jQZ2zzbT"></script>
+
     <script>
-        let currentBlob = null;
+        let currentAudioUrl = null;
 
-        // Load voices
-        function loadVoices() {
-            const select = document.getElementById('voice');
-            const voices = speechSynthesis.getVoices();
-            select.innerHTML = '';
-            voices.forEach((v, i) => {
-                const opt = document.createElement('option');
-                opt.value = i;
-                opt.textContent = `${v.name} (${v.lang})`;
-                select.appendChild(opt);
-            });
-        }
-
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = loadVoices;
-        }
-        loadVoices();
-
-        function updateVal(id) {
-            const val = document.getElementById(id).value;
-            document.getElementById(id + 'Val').textContent = val;
-        }
-
-        async function generate(e) {
+        async function generateVoice(e) {
             e.preventDefault();
 
             const text = document.getElementById('text').value;
-            const voiceIdx = document.getElementById('voice').value;
-            const speed = parseFloat(document.getElementById('speed').value);
-            const pitch = parseFloat(document.getElementById('pitch').value);
+            const voice = document.getElementById('voice').value;
 
             const btn = document.getElementById('btn');
             const spinner = document.getElementById('spinner');
@@ -280,35 +248,23 @@
             msg.style.display = 'none';
 
             try {
-                // Simply speak the text
-                const utterance = new SpeechSynthesisUtterance(text);
-                const voices = speechSynthesis.getVoices();
-                
-                if (voices[voiceIdx]) {
-                    utterance.voice = voices[voiceIdx];
-                }
-                
-                utterance.rate = speed;
-                utterance.pitch = pitch;
-
-                // Speak it
-                speechSynthesis.speak(utterance);
-
-                // Wait for completion
+                // Generate using ResponsiveVoice
                 await new Promise((resolve, reject) => {
-                    utterance.onend = resolve;
-                    utterance.onerror = reject;
+                    responsiveVoice.speak(text, voice, {
+                        onend: resolve,
+                        onerror: reject
+                    });
                 });
 
-                // Create a simple audio URL (for demo purposes)
-                // In real scenario, you'd need a backend to convert TTS to downloadable format
-                const audioUrl = createDemoAudio(text);
-                
-                document.getElementById('audio').src = audioUrl;
+                // Create audio using Web Speech API and record it
+                const audioBlob = await createAudioFromText(text, voice);
+                currentAudioUrl = URL.createObjectURL(audioBlob);
+
+                document.getElementById('audio').src = currentAudioUrl;
                 player.classList.add('active');
-                
+
                 msg.className = 'message success';
-                msg.textContent = '✅ Voice generated! Click play to listen.';
+                msg.textContent = '✅ Voice generated successfully! You can play and download it.';
 
             } catch (err) {
                 msg.className = 'message error';
@@ -320,93 +276,58 @@
             spinner.classList.remove('active');
         }
 
-        function createDemoAudio(text) {
-            // Create a simple audio file
-            // This is a workaround since browser TTS can't be directly captured
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            const audioContext = new AudioContext();
-            
-            // Create a simple tone as placeholder
-            const duration = Math.min(text.length / 10, 30); // Max 30 seconds
-            const sampleRate = audioContext.sampleRate;
-            const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate);
-            const data = buffer.getChannelData(0);
-            
-            // Generate simple audio data
-            for (let i = 0; i < data.length; i++) {
-                data[i] = Math.sin(2 * Math.PI * 440 * i / sampleRate) * 0.1;
-            }
-            
-            // Convert to WAV
-            const wav = bufferToWav(buffer);
-            currentBlob = new Blob([wav], { type: 'audio/wav' });
-            
-            return URL.createObjectURL(currentBlob);
+        async function createAudioFromText(text, voice) {
+            return new Promise((resolve, reject) => {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioContext = new AudioContext();
+                const dest = audioContext.createMediaStreamDestination();
+                
+                const mediaRecorder = new MediaRecorder(dest.stream);
+                const chunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        chunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    resolve(blob);
+                };
+
+                // Start recording
+                mediaRecorder.start();
+
+                // Speak and record
+                responsiveVoice.speak(text, voice, {
+                    onend: () => {
+                        setTimeout(() => {
+                            mediaRecorder.stop();
+                            audioContext.close();
+                        }, 500);
+                    },
+                    onerror: (err) => {
+                        mediaRecorder.stop();
+                        audioContext.close();
+                        reject(err);
+                    }
+                });
+            });
         }
 
-        function bufferToWav(buffer) {
-            const length = buffer.length * buffer.numberOfChannels * 2 + 44;
-            const arrayBuffer = new ArrayBuffer(length);
-            const view = new DataView(arrayBuffer);
-            const channels = [];
-            let offset = 0;
-            let pos = 0;
-
-            // Write WAV header
-            setUint32(0x46464952); // "RIFF"
-            setUint32(length - 8); // file length - 8
-            setUint32(0x45564157); // "WAVE"
-            setUint32(0x20746d66); // "fmt "
-            setUint32(16); // length = 16
-            setUint16(1); // PCM
-            setUint16(buffer.numberOfChannels);
-            setUint32(buffer.sampleRate);
-            setUint32(buffer.sampleRate * 2 * buffer.numberOfChannels); // byte rate
-            setUint16(buffer.numberOfChannels * 2); // block align
-            setUint16(16); // bits per sample
-            setUint32(0x61746164); // "data"
-            setUint32(length - pos - 4); // data length
-
-            // Write audio data
-            for (let i = 0; i < buffer.numberOfChannels; i++) {
-                channels.push(buffer.getChannelData(i));
-            }
-
-            for (let i = 0; i < buffer.length; i++) {
-                for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-                    const sample = Math.max(-1, Math.min(1, channels[channel][i]));
-                    view.setInt16(pos, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
-                    pos += 2;
-                }
-            }
-
-            function setUint16(data) {
-                view.setUint16(pos, data, true);
-                pos += 2;
-            }
-
-            function setUint32(data) {
-                view.setUint32(pos, data, true);
-                pos += 4;
-            }
-
-            return arrayBuffer;
-        }
-
-        function download() {
-            if (!currentBlob) {
+        function downloadAudio() {
+            if (!currentAudioUrl) {
                 alert('❌ Please generate audio first!');
                 return;
             }
 
-            const url = URL.createObjectURL(currentBlob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `twelvelab-${Date.now()}.wav`;
+            a.href = currentAudioUrl;
+            a.download = `twelvelab-voice-${Date.now()}.webm`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
 
             const msg = document.getElementById('msg');
             msg.className = 'message success';
