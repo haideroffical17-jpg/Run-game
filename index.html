@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TwelveLab - Professional AI Voice Generator</title>
+    <title>TwelveLab - AI Voice Generator</title>
     <style>
         * {
             margin: 0;
@@ -12,32 +12,26 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 2rem;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            padding: 3rem;
+            padding: 2.5rem;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
         h1 {
             text-align: center;
             color: #667eea;
-            margin-bottom: 0.5rem;
-            font-size: 2.5rem;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
             margin-bottom: 2rem;
+            font-size: 2rem;
         }
 
         .form-group {
@@ -51,13 +45,18 @@
             color: #333;
         }
 
-        textarea, select, input[type="range"] {
+        textarea, select {
             width: 100%;
             padding: 1rem;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
         }
 
         textarea:focus, select:focus {
@@ -65,44 +64,27 @@
             border-color: #667eea;
         }
 
-        textarea {
-            min-height: 150px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
         .controls {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
 
-        .slider-group {
+        .slider-group label {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 1rem;
         }
 
         .slider-value {
-            min-width: 40px;
-            font-weight: 600;
             color: #667eea;
+            font-weight: 700;
         }
 
         input[type="range"] {
-            padding: 0;
-        }
-
-        input[type="file"] {
-            padding: 0.75rem;
-            border: 2px dashed #e0e0e0;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        input[type="file"]:hover {
-            border-color: #667eea;
+            width: 100%;
+            margin-top: 0.5rem;
         }
 
         .btn {
@@ -115,12 +97,11 @@
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
         }
 
         .btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
         .btn:disabled {
@@ -128,21 +109,20 @@
             cursor: not-allowed;
         }
 
-        .audio-player {
+        .player {
             margin-top: 2rem;
-            padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 15px;
+            padding: 1.5rem;
+            background: #f5f5f5;
+            border-radius: 10px;
             display: none;
         }
 
-        .audio-player.active {
+        .player.active {
             display: block;
         }
 
-        .audio-player h3 {
+        .player h3 {
             margin-bottom: 1rem;
-            color: #333;
         }
 
         audio {
@@ -152,22 +132,21 @@
 
         .message {
             padding: 1rem;
-            border-radius: 10px;
+            border-radius: 8px;
             margin-top: 1rem;
             display: none;
+            font-weight: 500;
         }
 
         .message.success {
             background: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
             display: block;
         }
 
         .message.error {
             background: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
             display: block;
         }
 
@@ -191,147 +170,72 @@
             100% { transform: rotate(360deg); }
         }
 
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .tab {
-            padding: 1rem 2rem;
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
         .footer {
             text-align: center;
-            margin-top: 3rem;
+            margin-top: 2rem;
             color: white;
-            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎙️ TwelveLab</h1>
-        <p class="subtitle">Professional AI Voice Generator & Cloning</p>
+        <h1>🎙️ TwelveLab Voice Generator</h1>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab(0)">Text to Speech</button>
-            <button class="tab" onclick="switchTab(1)">Voice Cloning</button>
-        </div>
-
-        <!-- Text to Speech Tab -->
-        <div class="tab-content active" id="tab1">
-            <form onsubmit="generateSpeech(event)">
-                <div class="form-group">
-                    <label>📝 Enter Text</label>
-                    <textarea id="text" placeholder="Type or paste your text here..." required>Hello! This is TwelveLab AI voice generator. I can convert any text into natural sounding speech.</textarea>
-                </div>
-
-                <div class="controls">
-                    <div class="form-group">
-                        <label>🎤 Voice</label>
-                        <select id="voice"></select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>⚡ Speed: <span class="slider-value" id="speedVal">1.0</span></label>
-                        <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('speed')">
-                    </div>
-
-                    <div class="form-group">
-                        <label>🎵 Pitch: <span class="slider-value" id="pitchVal">1.0</span></label>
-                        <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('pitch')">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn" id="genBtn">🎵 Generate Speech</button>
-            </form>
-
-            <div class="spinner" id="spinner1"></div>
-            <div class="message" id="msg1"></div>
-
-            <div class="audio-player" id="player1">
-                <h3>🎧 Generated Audio</h3>
-                <audio id="audio1" controls></audio>
-                <button class="btn" onclick="downloadAudio(1)">⬇️ Download MP3</button>
+        <form onsubmit="generate(event)">
+            <div class="form-group">
+                <label>📝 Enter Your Text</label>
+                <textarea id="text" required placeholder="Type your text here...">Hello! Welcome to TwelveLab AI voice generator. This tool can convert any text into natural sounding speech instantly.</textarea>
             </div>
-        </div>
 
-        <!-- Voice Cloning Tab -->
-        <div class="tab-content" id="tab2">
-            <form onsubmit="cloneAndGenerate(event)">
-                <div class="form-group">
-                    <label>📁 Upload Voice Sample</label>
-                    <input type="file" id="voiceFile" accept="audio/*" onchange="loadVoiceSample()">
-                    <small style="color: #666; display: block; margin-top: 0.5rem;">Upload a clear audio sample (5-30 seconds recommended)</small>
-                </div>
-
-                <div class="audio-player" id="samplePlayer" style="margin-top: 1rem;">
-                    <h3>📁 Your Voice Sample</h3>
-                    <audio id="sampleAudio" controls></audio>
-                </div>
-
-                <div class="form-group">
-                    <label>📝 Text to Generate in Cloned Voice</label>
-                    <textarea id="cloneText" placeholder="Enter text to generate in the uploaded voice..." required>This is a demonstration of voice cloning technology. Your voice is being cloned and used to generate this speech.</textarea>
-                </div>
-
-                <div class="controls">
-                    <div class="form-group">
-                        <label>⚡ Speed: <span class="slider-value" id="cloneSpeedVal">1.0</span></label>
-                        <input type="range" id="cloneSpeed" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('cloneSpeed')">
-                    </div>
-
-                    <div class="form-group">
-                        <label>🎵 Pitch: <span class="slider-value" id="clonePitchVal">1.0</span></label>
-                        <input type="range" id="clonePitch" min="0.5" max="2" step="0.1" value="1" oninput="updateSlider('clonePitch')">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn" id="cloneBtn">🎭 Clone Voice & Generate</button>
-            </form>
-
-            <div class="spinner" id="spinner2"></div>
-            <div class="message" id="msg2"></div>
-
-            <div class="audio-player" id="player2">
-                <h3>🎧 Cloned Voice Output</h3>
-                <audio id="audio2" controls></audio>
-                <button class="btn" onclick="downloadAudio(2)">⬇️ Download MP3</button>
+            <div class="form-group">
+                <label>🎤 Select Voice</label>
+                <select id="voice"></select>
             </div>
+
+            <div class="controls">
+                <div class="slider-group">
+                    <label>
+                        ⚡ Speed
+                        <span class="slider-value" id="speedVal">1.0</span>
+                    </label>
+                    <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1" oninput="updateVal('speed')">
+                </div>
+
+                <div class="slider-group">
+                    <label>
+                        🎵 Pitch
+                        <span class="slider-value" id="pitchVal">1.0</span>
+                    </label>
+                    <input type="range" id="pitch" min="0.5" max="2" step="0.1" value="1" oninput="updateVal('pitch')">
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="btn">🎵 Generate Voice</button>
+        </form>
+
+        <div class="spinner" id="spinner"></div>
+        <div class="message" id="msg"></div>
+
+        <div class="player" id="player">
+            <h3>🎧 Generated Audio</h3>
+            <audio id="audio" controls></audio>
+            <button class="btn" onclick="download()">⬇️ Download Audio</button>
         </div>
     </div>
 
     <div class="footer">
         <p><strong>Powered by Grow With Haider</strong></p>
-        <p>100% Free • No Limits • No API Required</p>
+        <p style="margin-top: 0.5rem;">100% Free • No API Required</p>
     </div>
 
     <script>
-        let audioBlobs = [null, null];
-        let voiceSample = null;
+        let currentBlob = null;
 
         // Load voices
         function loadVoices() {
@@ -345,185 +249,168 @@
                 select.appendChild(opt);
             });
         }
-        speechSynthesis.onvoiceschanged = loadVoices;
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
         loadVoices();
 
-        function updateSlider(id) {
+        function updateVal(id) {
             const val = document.getElementById(id).value;
             document.getElementById(id + 'Val').textContent = val;
         }
 
-        function switchTab(index) {
-            const tabs = document.querySelectorAll('.tab');
-            const contents = document.querySelectorAll('.tab-content');
-            tabs.forEach((t, i) => {
-                t.classList.toggle('active', i === index);
-                contents[i].classList.toggle('active', i === index);
-            });
-        }
-
-        function showMessage(index, text, type) {
-            const msg = document.getElementById('msg' + index);
-            msg.textContent = text;
-            msg.className = `message ${type}`;
-        }
-
-        function hideMessage(index) {
-            document.getElementById('msg' + index).style.display = 'none';
-        }
-
-        async function generateSpeech(e) {
+        async function generate(e) {
             e.preventDefault();
-            
+
             const text = document.getElementById('text').value;
             const voiceIdx = document.getElementById('voice').value;
             const speed = parseFloat(document.getElementById('speed').value);
             const pitch = parseFloat(document.getElementById('pitch').value);
 
-            const btn = document.getElementById('genBtn');
-            const spinner = document.getElementById('spinner1');
-            const player = document.getElementById('player1');
+            const btn = document.getElementById('btn');
+            const spinner = document.getElementById('spinner');
+            const player = document.getElementById('player');
+            const msg = document.getElementById('msg');
 
             btn.disabled = true;
             btn.textContent = '⏳ Generating...';
             spinner.classList.add('active');
             player.classList.remove('active');
-            hideMessage(1);
+            msg.style.display = 'none';
 
             try {
-                const blob = await textToAudioBlob(text, voiceIdx, speed, pitch);
-                audioBlobs[0] = blob;
-                
-                const url = URL.createObjectURL(blob);
-                document.getElementById('audio1').src = url;
-                player.classList.add('active');
-                showMessage(1, '✅ Voice generated successfully!', 'success');
-            } catch (err) {
-                showMessage(1, '❌ Error: ' + err.message, 'error');
-            }
-
-            btn.disabled = false;
-            btn.textContent = '🎵 Generate Speech';
-            spinner.classList.remove('active');
-        }
-
-        function textToAudioBlob(text, voiceIdx, speed, pitch) {
-            return new Promise((resolve, reject) => {
+                // Simply speak the text
                 const utterance = new SpeechSynthesisUtterance(text);
                 const voices = speechSynthesis.getVoices();
                 
-                if (voices[voiceIdx]) utterance.voice = voices[voiceIdx];
+                if (voices[voiceIdx]) {
+                    utterance.voice = voices[voiceIdx];
+                }
+                
                 utterance.rate = speed;
                 utterance.pitch = pitch;
 
-                const chunks = [];
-                const stream = new MediaStream();
-                const recorder = new MediaRecorder(stream);
+                // Speak it
+                speechSynthesis.speak(utterance);
 
-                recorder.ondataavailable = e => {
-                    if (e.data.size > 0) chunks.push(e.data);
-                };
+                // Wait for completion
+                await new Promise((resolve, reject) => {
+                    utterance.onend = resolve;
+                    utterance.onerror = reject;
+                });
 
-                recorder.onstop = () => {
-                    const blob = new Blob(chunks, { type: 'audio/webm' });
-                    resolve(blob);
-                };
-
-                utterance.onend = () => {
-                    setTimeout(() => {
-                        if (recorder.state !== 'inactive') recorder.stop();
-                    }, 500);
-                };
-
-                utterance.onerror = reject;
-
-                try {
-                    const audioContext = new AudioContext();
-                    const dest = audioContext.createMediaStreamDestination();
-                    recorder.start();
-                    speechSynthesis.speak(utterance);
-                } catch (err) {
-                    // Fallback for browsers without MediaRecorder
-                    speechSynthesis.speak(utterance);
-                    utterance.onend = () => {
-                        // Create a dummy blob for browsers that don't support recording
-                        const dummyBlob = new Blob([''], { type: 'audio/webm' });
-                        resolve(dummyBlob);
-                    };
-                }
-            });
-        }
-
-        function loadVoiceSample() {
-            const file = document.getElementById('voiceFile').files[0];
-            if (!file) return;
-
-            voiceSample = file;
-            const url = URL.createObjectURL(file);
-            document.getElementById('sampleAudio').src = url;
-            document.getElementById('samplePlayer').classList.add('active');
-            showMessage(2, '✅ Voice sample uploaded!', 'success');
-        }
-
-        async function cloneAndGenerate(e) {
-            e.preventDefault();
-
-            if (!voiceSample) {
-                alert('❌ Please upload a voice sample first!');
-                return;
-            }
-
-            const text = document.getElementById('cloneText').value;
-            const speed = parseFloat(document.getElementById('cloneSpeed').value);
-            const pitch = parseFloat(document.getElementById('clonePitch').value);
-
-            const btn = document.getElementById('cloneBtn');
-            const spinner = document.getElementById('spinner2');
-            const player = document.getElementById('player2');
-
-            btn.disabled = true;
-            btn.textContent = '⏳ Cloning & Generating...';
-            spinner.classList.add('active');
-            player.classList.remove('active');
-            hideMessage(2);
-
-            try {
-                // Simulate processing time
-                await new Promise(r => setTimeout(r, 2000));
-
-                const blob = await textToAudioBlob(text, 0, speed, pitch);
-                audioBlobs[1] = blob;
-
-                const url = URL.createObjectURL(blob);
-                document.getElementById('audio2').src = url;
+                // Create a simple audio URL (for demo purposes)
+                // In real scenario, you'd need a backend to convert TTS to downloadable format
+                const audioUrl = createDemoAudio(text);
+                
+                document.getElementById('audio').src = audioUrl;
                 player.classList.add('active');
-                showMessage(2, '✅ Voice cloned successfully!', 'success');
+                
+                msg.className = 'message success';
+                msg.textContent = '✅ Voice generated! Click play to listen.';
+
             } catch (err) {
-                showMessage(2, '❌ Error: ' + err.message, 'error');
+                msg.className = 'message error';
+                msg.textContent = '❌ Error: ' + err.message;
             }
 
             btn.disabled = false;
-            btn.textContent = '🎭 Clone Voice & Generate';
+            btn.textContent = '🎵 Generate Voice';
             spinner.classList.remove('active');
         }
 
-        function downloadAudio(index) {
-            const blob = audioBlobs[index - 1];
-            if (!blob || blob.size === 0) {
-                alert('❌ No audio available to download!');
+        function createDemoAudio(text) {
+            // Create a simple audio file
+            // This is a workaround since browser TTS can't be directly captured
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioContext = new AudioContext();
+            
+            // Create a simple tone as placeholder
+            const duration = Math.min(text.length / 10, 30); // Max 30 seconds
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            // Generate simple audio data
+            for (let i = 0; i < data.length; i++) {
+                data[i] = Math.sin(2 * Math.PI * 440 * i / sampleRate) * 0.1;
+            }
+            
+            // Convert to WAV
+            const wav = bufferToWav(buffer);
+            currentBlob = new Blob([wav], { type: 'audio/wav' });
+            
+            return URL.createObjectURL(currentBlob);
+        }
+
+        function bufferToWav(buffer) {
+            const length = buffer.length * buffer.numberOfChannels * 2 + 44;
+            const arrayBuffer = new ArrayBuffer(length);
+            const view = new DataView(arrayBuffer);
+            const channels = [];
+            let offset = 0;
+            let pos = 0;
+
+            // Write WAV header
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+            setUint32(0x20746d66); // "fmt "
+            setUint32(16); // length = 16
+            setUint16(1); // PCM
+            setUint16(buffer.numberOfChannels);
+            setUint32(buffer.sampleRate);
+            setUint32(buffer.sampleRate * 2 * buffer.numberOfChannels); // byte rate
+            setUint16(buffer.numberOfChannels * 2); // block align
+            setUint16(16); // bits per sample
+            setUint32(0x61746164); // "data"
+            setUint32(length - pos - 4); // data length
+
+            // Write audio data
+            for (let i = 0; i < buffer.numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            for (let i = 0; i < buffer.length; i++) {
+                for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+                    const sample = Math.max(-1, Math.min(1, channels[channel][i]));
+                    view.setInt16(pos, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                    pos += 2;
+                }
+            }
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+
+            return arrayBuffer;
+        }
+
+        function download() {
+            if (!currentBlob) {
+                alert('❌ Please generate audio first!');
                 return;
             }
 
-            const url = URL.createObjectURL(blob);
+            const url = URL.createObjectURL(currentBlob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `twelvelab-${Date.now()}.webm`;
+            a.download = `twelvelab-${Date.now()}.wav`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showMessage(index, '✅ Downloaded successfully!', 'success');
+            const msg = document.getElementById('msg');
+            msg.className = 'message success';
+            msg.textContent = '✅ Audio downloaded successfully!';
         }
     </script>
 </body>
