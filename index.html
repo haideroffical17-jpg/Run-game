@@ -21,7 +21,6 @@
             overflow-x: hidden;
         }
 
-        /* ============ LOGIN PAGE ============ */
         #loginPage {
             display: flex;
             align-items: center;
@@ -88,7 +87,6 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        /* ============ PRICING CARD ============ */
         .pricing-card {
             background: linear-gradient(135deg, #FF8C00 0%, #FF6B35 100%);
             color: white;
@@ -237,7 +235,6 @@
             font-size: 0.95em;
         }
 
-        /* ============ MAIN APP ============ */
         #mainApp {
             display: none;
             padding: 0;
@@ -698,7 +695,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        /* Admin Styles */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -805,7 +801,6 @@
     </style>
 </head>
 <body>
-    <!-- ==================== LOGIN PAGE ==================== -->
     <div id="loginPage">
         <div class="login-container">
             <div class="hero-section">
@@ -834,7 +829,6 @@
             </div>
 
             <div class="auth-section">
-                <!-- Pricing Card -->
                 <div class="pricing-card">
                     <div class="pricing-badge">⭐ MOST POPULAR</div>
                     <h2>Monthly Premium</h2>
@@ -866,7 +860,6 @@
                     5. Renew every month to continue access
                 </div>
 
-                <!-- Login Form Only -->
                 <div id="loginForm">
                     <h3 style="color: #667eea; margin-bottom: 20px; text-align: center;">🔐 Login to Your Account</h3>
                     
@@ -891,9 +884,7 @@
         </div>
     </div>
 
-    <!-- ==================== MAIN APP ==================== -->
     <div id="mainApp">
-        <!-- Top Bar -->
         <div class="top-bar">
             <div class="logo">
                 🚀 Grow With Haider
@@ -911,7 +902,6 @@
         </div>
 
         <div class="container">
-            <!-- Expiry Warning -->
             <div class="expiry-warning" id="expiryWarning" style="display: none;">
                 <h3>⚠️ Subscription Expiring Soon!</h3>
                 <p id="expiryMessage"></p>
@@ -923,7 +913,6 @@
                 </a>
             </div>
 
-            <!-- WhatsApp Channel Promo -->
             <div class="channel-promo">
                 <h3>📱 Join Grow With Haider WhatsApp Channel</h3>
                 <p>Get latest updates, tips, and exclusive content!</p>
@@ -937,14 +926,12 @@
                 <p id="pageSubtitle">Premium AI Image & Prompt Tools</p>
             </div>
 
-            <!-- Navigation Tabs -->
             <div class="nav-tabs" id="mainTabs">
                 <button class="tab-button active" onclick="switchMainTab('generator')">🎨 Image Generator</button>
                 <button class="tab-button" onclick="switchMainTab('editor')">🖼️ AI Reimagine</button>
                 <button class="tab-button" onclick="switchMainTab('scriptToPrompt')">📝 Script-to-Prompt</button>
             </div>
 
-            <!-- TAB 1: IMAGE GENERATOR -->
             <div id="generatorTab" class="tab-content active">
                 <div class="config-section">
                     <div class="form-group">
@@ -998,7 +985,6 @@ A cute robot learning to paint"></textarea>
                 <div class="gallery" id="gallery"></div>
             </div>
 
-            <!-- TAB 2: AI REIMAGINE -->
             <div id="editorTab" class="tab-content">
                 <div class="upload-section" id="uploadSection">
                     <div class="upload-area" id="uploadArea">
@@ -1056,7 +1042,6 @@ Reimagine as a futuristic city scene"></textarea>
                 <div class="gallery" id="editorGallery"></div>
             </div>
 
-            <!-- TAB 3: SCRIPT-TO-PROMPT -->
             <div id="scriptToPromptTab" class="tab-content">
                 <div class="config-section">
                     <div class="info-box">
@@ -1107,7 +1092,6 @@ Outside, the city was bustling with people."></textarea>
                 </div>
             </div>
 
-            <!-- ADMIN PANEL -->
             <div id="adminPanel" class="tab-content" style="display: none;">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -1135,7 +1119,6 @@ Outside, the city was bustling with people."></textarea>
                     </div>
                 </div>
 
-                <!-- Add New User Section -->
                 <div class="config-section" style="margin-bottom: 30px;">
                     <h2 style="margin-bottom: 20px;">➕ Add New Premium User</h2>
                     
@@ -1211,7 +1194,7 @@ Outside, the city was bustling with people."></textarea>
                         </div>
                         <div style="background: white; padding: 20px; border-radius: 10px;">
                             <h3 style="color: #667eea; margin-bottom: 10px;">🌐 Platform Info</h3>
-                            <p><strong>Version:</strong> 2.1 (Monthly)</p>
+                            <p><strong>Version:</strong> 2.2 (Fixed)</p>
                             <p><strong>API:</strong> Pollinations.ai</p>
                         </div>
                     </div>
@@ -1220,7 +1203,6 @@ Outside, the city was bustling with people."></textarea>
         </div>
     </div>
 
-    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
             <div class="spinner"></div>
@@ -1230,7 +1212,6 @@ Outside, the city was bustling with people."></textarea>
     </div>
 
     <script>
-        // ==================== GLOBAL STATE ====================
         const CONFIG = {
             baseUrl: 'https://image.pollinations.ai/prompt/',
             defaultParams: { nologo: 'true', enhance: 'true', model: 'flux' }
@@ -1245,9 +1226,7 @@ Outside, the city was bustling with people."></textarea>
         let allUsers = [];
 
         const RESERVED_USERNAMES = ['growwithhaider', 'admin', 'administrator', 'root'];
-        const DAYS_IN_MONTH = 30;
 
-        // ==================== DATE & EXPIRY FUNCTIONS ====================
         function addMonths(date, months) {
             const newDate = new Date(date);
             newDate.setMonth(newDate.getMonth() + months);
@@ -1266,7 +1245,6 @@ Outside, the city was bustling with people."></textarea>
             return getDaysRemaining(expiryDate) > 0;
         }
 
-        // ==================== DEVICE ID SYSTEM ====================
         function getDeviceId() {
             let deviceId = localStorage.getItem('gwh_device_id');
             if (!deviceId) {
@@ -1276,13 +1254,11 @@ Outside, the city was bustling with people."></textarea>
             return deviceId;
         }
 
-        // ==================== INITIALIZATION ====================
         window.addEventListener('DOMContentLoaded', () => {
             const userData = localStorage.getItem('gwh_current_user');
             if (userData) {
                 currentUser = JSON.parse(userData);
                 
-                // Check if subscription expired
                 if (!currentUser.isAdmin && !isSubscriptionActive(currentUser.expiryDate)) {
                     alert('⚠️ Your subscription has expired. Please renew to continue using the service.');
                     localStorage.removeItem('gwh_current_user');
@@ -1290,7 +1266,6 @@ Outside, the city was bustling with people."></textarea>
                     return;
                 }
 
-                // Check device restriction
                 if (!currentUser.isAdmin && currentUser.deviceId !== getDeviceId()) {
                     alert('⚠️ This account is logged in on another device. Please logout from other device first.');
                     localStorage.removeItem('gwh_current_user');
@@ -1310,7 +1285,6 @@ Outside, the city was bustling with people."></textarea>
             });
         });
 
-        // ==================== AUTH FUNCTIONS ====================
         function clearMessages() {
             document.querySelectorAll('.error-message, .success-message, .warning-message').forEach(msg => {
                 msg.style.display = 'none';
@@ -1337,7 +1311,6 @@ Outside, the city was bustling with people."></textarea>
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
 
-            // Admin login check
             if (username === 'GrowWithHaider' && password === 'HaiderAli369') {
                 currentUser = {
                     username: username,
@@ -1345,7 +1318,7 @@ Outside, the city was bustling with people."></textarea>
                     isAdmin: true,
                     isPremium: true,
                     deviceId: getDeviceId(),
-                    expiryDate: addMonths(new Date(), 120), // Admin never expires
+                    expiryDate: addMonths(new Date(), 120).toISOString(),
                     loginTime: new Date().toISOString()
                 };
                 localStorage.setItem('gwh_current_user', JSON.stringify(currentUser));
@@ -1354,28 +1327,23 @@ Outside, the city was bustling with people."></textarea>
                 return;
             }
 
-            // Regular user login
             const users = JSON.parse(localStorage.getItem('gwh_users') || '[]');
             const user = users.find(u => u.username === username && u.password === password);
 
             if (user) {
-                // Check if subscription expired
                 if (!isSubscriptionActive(user.expiryDate)) {
                     showError('loginError', '⚠️ Your subscription has expired. Please renew to continue. Contact admin on WhatsApp.');
                     return;
                 }
 
-                // Check device restriction
                 if (user.deviceId && user.deviceId !== getDeviceId()) {
                     showError('loginError', '⚠️ This account is already logged in on another device. Only 1 device allowed per account.');
                     return;
                 }
 
-                // Update device ID
                 user.deviceId = getDeviceId();
                 user.lastLogin = new Date().toISOString();
                 
-                // Save updated user data
                 const userIndex = users.findIndex(u => u.username === username);
                 users[userIndex] = user;
                 localStorage.setItem('gwh_users', JSON.stringify(users));
@@ -1397,7 +1365,6 @@ Outside, the city was bustling with people."></textarea>
             }
         }
 
-        // ✅ FIX: Admin creates new user and AUTO-LOGIN
         function handleAdminSignup(event) {
             event.preventDefault();
             
@@ -1439,58 +1406,48 @@ Outside, the city was bustling with people."></textarea>
                 return;
             }
 
-            // Calculate expiry date (30 days from now)
             const expiryDate = addMonths(new Date(), 1);
 
-            // Add new premium user
             const newUser = {
                 username: username,
                 email: email,
                 password: password,
                 isPremium: true,
-                deviceId: null,
+                deviceId: getDeviceId(),
                 expiryDate: expiryDate.toISOString(),
                 createdAt: new Date().toISOString(),
-                createdBy: 'admin'
+                createdBy: 'admin',
+                lastLogin: new Date().toISOString()
             };
 
             users.push(newUser);
             localStorage.setItem('gwh_users', JSON.stringify(users));
 
-            // Show success message
-            showSuccess('adminSuccess', `✅ User "${username}" created successfully! Logging in...`);
-            
-            // Clear form
             document.getElementById('adminUsername').value = '';
             document.getElementById('adminEmail').value = '';
             document.getElementById('adminPassword').value = '';
 
-            // ✅ AUTO-LOGIN as the newly created user
-            setTimeout(() => {
-                // Update device ID for new user
-                newUser.deviceId = getDeviceId();
-                const userIndex = users.findIndex(u => u.username === username);
-                users[userIndex] = newUser;
-                localStorage.setItem('gwh_users', JSON.stringify(users));
+            const newUserSession = {
+                username: newUser.username,
+                email: newUser.email,
+                isAdmin: false,
+                isPremium: true,
+                deviceId: newUser.deviceId,
+                expiryDate: newUser.expiryDate,
+                loginTime: new Date().toISOString()
+            };
 
-                // Login as new user
-                currentUser = {
-                    username: newUser.username,
-                    email: newUser.email,
-                    isAdmin: false,
-                    isPremium: true,
-                    deviceId: newUser.deviceId,
-                    expiryDate: newUser.expiryDate,
-                    loginTime: new Date().toISOString()
-                };
-                localStorage.setItem('gwh_current_user', JSON.stringify(currentUser));
-
-                // Show main app
-                alert(`✅ Account created and logged in successfully!\n\nUsername: ${username}\nPassword: ${password}\nExpiry: ${new Date(expiryDate).toLocaleDateString()}\n\nPlease save these credentials!`);
-                
-                // Reload to show main app
-                location.reload();
-            }, 2000);
+            localStorage.setItem('gwh_current_user', JSON.stringify(newUserSession));
+            
+            const expiryDateFormatted = new Date(expiryDate).toLocaleDateString();
+            alert(`✅ Account created and logged in successfully!\n\n` +
+                  `Username: ${username}\n` +
+                  `Password: ${password}\n` +
+                  `Expiry: ${expiryDateFormatted}\n\n` +
+                  `Please save these credentials!\n\n` +
+                  `Page will reload now...`);
+            
+            location.reload();
         }
 
         function showMainApp() {
@@ -1509,13 +1466,11 @@ Outside, the city was bustling with people."></textarea>
             if (currentUser.isPremium) {
                 document.getElementById('premiumBadge').style.display = 'inline-block';
 
-                // Show expiry badge
                 const daysRemaining = getDaysRemaining(currentUser.expiryDate);
                 const expiryBadge = document.getElementById('expiryBadge');
                 expiryBadge.textContent = `📅 ${daysRemaining} days left`;
                 expiryBadge.style.display = 'inline-block';
 
-                // Show expiry warning if < 7 days
                 if (daysRemaining <= 7 && daysRemaining > 0) {
                     const warningDiv = document.getElementById('expiryWarning');
                     const messageDiv = document.getElementById('expiryMessage');
@@ -1547,7 +1502,6 @@ Outside, the city was bustling with people."></textarea>
             document.getElementById('pageSubtitle').textContent = 'Premium AI Image & Prompt Tools';
             document.querySelector('.channel-promo').style.display = 'block';
             
-            // Show expiry warning if needed
             if (!currentUser.isAdmin) {
                 const daysRemaining = getDaysRemaining(currentUser.expiryDate);
                 if (daysRemaining <= 7 && daysRemaining > 0) {
@@ -1561,7 +1515,6 @@ Outside, the city was bustling with people."></textarea>
 
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                // Clear device ID from user data if not admin
                 if (!currentUser.isAdmin) {
                     const users = JSON.parse(localStorage.getItem('gwh_users') || '[]');
                     const userIndex = users.findIndex(u => u.username === currentUser.username);
@@ -1576,7 +1529,6 @@ Outside, the city was bustling with people."></textarea>
             }
         }
 
-        // ==================== TAB SWITCHING ====================
         function switchMainTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
@@ -1589,7 +1541,6 @@ Outside, the city was bustling with people."></textarea>
             if (tabName === 'scriptToPrompt') buttons[2].classList.add('active');
         }
 
-        // ==================== IMAGE GENERATOR ====================
         function buildImageUrl(prompt, dimensions, seed) {
             const [width, height] = dimensions.split('x');
             const params = new URLSearchParams({
@@ -1770,7 +1721,6 @@ Outside, the city was bustling with people."></textarea>
             }
         }
 
-        // ==================== AI REIMAGINE ====================
         let uploadedImageData = null;
 
         document.getElementById('uploadArea').addEventListener('click', () => {
@@ -1896,7 +1846,6 @@ Outside, the city was bustling with people."></textarea>
             }
         });
 
-        // ==================== SCRIPT-TO-PROMPT ====================
         document.getElementById('convertScriptBtn').addEventListener('click', () => {
             const scriptText = document.getElementById('scriptInput').value.trim();
             
@@ -1983,7 +1932,6 @@ Outside, the city was bustling with people."></textarea>
             s2pGeneratedPrompts = [];
         });
 
-        // ==================== ADMIN PANEL ====================
         function loadUsers() {
             const users = JSON.parse(localStorage.getItem('gwh_users') || '[]');
             allUsers = users;
@@ -2103,7 +2051,6 @@ Outside, the city was bustling with people."></textarea>
             document.getElementById('monthlyRevenue').textContent = 'Rs ' + (activeUsers.length * 300);
         }
 
-        // ==================== UTILITY FUNCTIONS ====================
         function showLoading(text) {
             document.getElementById('loadingText').textContent = text;
             document.getElementById('loadingOverlay').classList.add('active');
@@ -2113,16 +2060,14 @@ Outside, the city was bustling with people."></textarea>
             document.getElementById('loadingOverlay').classList.remove('active');
         }
 
-        // ==================== EVENT LISTENERS ====================
         document.getElementById('generateBtn').addEventListener('click', startGeneration);
         document.getElementById('stopBtn').addEventListener('click', stopGeneration);
         document.getElementById('clearBtn').addEventListener('click', clearGallery);
         document.getElementById('downloadAllBtn').addEventListener('click', downloadAllImages);
 
-        console.log('🚀 GWH Premium Platform v2.1 (Monthly) Loaded');
+        console.log('🚀 GWH Premium Platform v2.2 (FIXED) Loaded');
         console.log('💰 Price: Rs 300/month');
-        console.log('📅 Subscription: Monthly renewal required');
-        console.log('⭐ Features: Unlimited access, all tools');
+        console.log('✅ Admin creates user → Auto-login FIXED');
         console.log('🔒 Device Lock: 1 account = 1 device only');
         console.log('📱 Contact: +92 323 4319689');
     </script>
