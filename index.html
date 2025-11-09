@@ -202,7 +202,7 @@
             resize: vertical;
         }
 
-        .error-message, .success-message {
+        .error-message, .success-message, .warning-message {
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -219,6 +219,12 @@
             background: #e6ffe6;
             color: #2e7d32;
             border-left: 4px solid #2e7d32;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
         }
 
         .info-message {
@@ -270,6 +276,16 @@
             padding: 5px 15px;
             border-radius: 20px;
             font-size: 0.9em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .expiry-badge {
+            background: #ff9800;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
             font-weight: 600;
             margin-left: 10px;
         }
@@ -357,6 +373,15 @@
         .channel-promo p {
             margin-bottom: 15px;
             opacity: 0.95;
+        }
+
+        .expiry-warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .nav-tabs {
@@ -754,9 +779,14 @@
             color: #333;
         }
 
-        .badge-pending {
-            background: #ffc107;
-            color: #856404;
+        .badge-expired {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-active {
+            background: #28a745;
+            color: white;
         }
 
         @media (max-width: 968px) {
@@ -797,8 +827,8 @@
                         <p>Convert stories into scene-by-scene prompts</p>
                     </div>
                     <div class="feature-card">
-                        <h3>📱 Premium Access</h3>
-                        <p>One-time payment, lifetime access</p>
+                        <h3>📱 Monthly Plan</h3>
+                        <p>Affordable monthly subscription</p>
                     </div>
                 </div>
             </div>
@@ -807,8 +837,8 @@
                 <!-- Pricing Card -->
                 <div class="pricing-card">
                     <div class="pricing-badge">⭐ MOST POPULAR</div>
-                    <h2>Premium Access</h2>
-                    <div class="price">Rs 300<span>/lifetime</span></div>
+                    <h2>Monthly Premium</h2>
+                    <div class="price">Rs 300<span>/month</span></div>
                     
                     <ul class="pricing-features">
                         <li>Unlimited Image Generation</li>
@@ -816,10 +846,10 @@
                         <li>AI Reimagine Tool</li>
                         <li>Script-to-Prompt Converter</li>
                         <li>Priority Support</li>
-                        <li>Lifetime Access</li>
+                        <li>Auto-renewal Every Month</li>
                     </ul>
 
-                    <a href="https://wa.me/923234319689?text=Hi%2C%20I%20want%20to%20buy%20Premium%20Access%20for%20Rs%20300" 
+                    <a href="https://wa.me/923234319689?text=Hi%2C%20I%20want%20to%20buy%20Monthly%20Premium%20for%20Rs%20300" 
                        target="_blank" 
                        class="whatsapp-btn">
                         <span class="whatsapp-icon">📱</span>
@@ -832,7 +862,8 @@
                     1. Click "Buy Now" button above<br>
                     2. Pay Rs 300 via WhatsApp<br>
                     3. Admin will create your account<br>
-                    4. Login and start creating!
+                    4. Login and start creating!<br>
+                    5. Renew every month to continue access
                 </div>
 
                 <!-- Login Form Only -->
@@ -868,6 +899,7 @@
                 🚀 Grow With Haider
                 <span class="admin-badge" id="adminBadge" style="display: none;">👑 ADMIN</span>
                 <span class="premium-badge" id="premiumBadge" style="display: none;">⭐ PREMIUM</span>
+                <span class="expiry-badge" id="expiryBadge" style="display: none;"></span>
             </div>
             <div class="user-menu">
                 <span class="username" id="displayUsername">User</span>
@@ -879,6 +911,18 @@
         </div>
 
         <div class="container">
+            <!-- Expiry Warning -->
+            <div class="expiry-warning" id="expiryWarning" style="display: none;">
+                <h3>⚠️ Subscription Expiring Soon!</h3>
+                <p id="expiryMessage"></p>
+                <a href="https://wa.me/923234319689?text=Hi%2C%20I%20want%20to%20renew%20my%20subscription" 
+                   target="_blank" 
+                   class="btn-top btn-whatsapp" 
+                   style="margin-top: 15px; display: inline-block;">
+                    Renew Now on WhatsApp
+                </a>
+            </div>
+
             <!-- WhatsApp Channel Promo -->
             <div class="channel-promo">
                 <h3>📱 Join Grow With Haider WhatsApp Channel</h3>
@@ -1074,20 +1118,20 @@ Outside, the city was bustling with people."></textarea>
 
                     <div class="stat-card">
                         <div class="stat-icon">⭐</div>
-                        <div class="stat-value" id="premiumUsers">0</div>
-                        <div class="stat-label">Premium Users</div>
+                        <div class="stat-value" id="activeUsers">0</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-value" id="expiringUsers">0</div>
+                        <div class="stat-label">Expiring Soon</div>
                     </div>
 
                     <div class="stat-card">
                         <div class="stat-icon">💰</div>
-                        <div class="stat-value" id="totalRevenue">Rs 0</div>
-                        <div class="stat-label">Total Revenue</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon">🚀</div>
-                        <div class="stat-value">100%</div>
-                        <div class="stat-label">System Uptime</div>
+                        <div class="stat-value" id="monthlyRevenue">Rs 0</div>
+                        <div class="stat-label">Monthly Revenue</div>
                     </div>
                 </div>
 
@@ -1114,8 +1158,12 @@ Outside, the city was bustling with people."></textarea>
                             <input type="password" id="adminPassword" placeholder="Create password" required minlength="6">
                         </div>
 
-                        <button type="submit" class="btn-success" style="height: 50px;">✅ Create User</button>
+                        <button type="submit" class="btn-success" style="height: 50px;">✅ Create & Login</button>
                     </form>
+
+                    <div class="info-message" style="margin-top: 15px;">
+                        ℹ️ <strong>Note:</strong> When you create a new user, the system will automatically log you in as that user to verify the account.
+                    </div>
                 </div>
 
                 <div class="config-section">
@@ -1133,8 +1181,8 @@ Outside, the city was bustling with people."></textarea>
                                     <th>Username</th>
                                     <th>Email</th>
                                     <th>Status</th>
+                                    <th>Expiry Date</th>
                                     <th>Device ID</th>
-                                    <th>Joined</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -1158,12 +1206,12 @@ Outside, the city was bustling with people."></textarea>
                         </div>
                         <div style="background: white; padding: 20px; border-radius: 10px;">
                             <h3 style="color: #667eea; margin-bottom: 10px;">💰 Pricing</h3>
-                            <p><strong>Plan:</strong> Premium Access</p>
-                            <p><strong>Price:</strong> Rs 300 (One-time)</p>
+                            <p><strong>Plan:</strong> Monthly Premium</p>
+                            <p><strong>Price:</strong> Rs 300/month</p>
                         </div>
                         <div style="background: white; padding: 20px; border-radius: 10px;">
                             <h3 style="color: #667eea; margin-bottom: 10px;">🌐 Platform Info</h3>
-                            <p><strong>Version:</strong> 2.0 (Premium)</p>
+                            <p><strong>Version:</strong> 2.1 (Monthly)</p>
                             <p><strong>API:</strong> Pollinations.ai</p>
                         </div>
                     </div>
@@ -1197,6 +1245,26 @@ Outside, the city was bustling with people."></textarea>
         let allUsers = [];
 
         const RESERVED_USERNAMES = ['growwithhaider', 'admin', 'administrator', 'root'];
+        const DAYS_IN_MONTH = 30;
+
+        // ==================== DATE & EXPIRY FUNCTIONS ====================
+        function addMonths(date, months) {
+            const newDate = new Date(date);
+            newDate.setMonth(newDate.getMonth() + months);
+            return newDate;
+        }
+
+        function getDaysRemaining(expiryDate) {
+            const now = new Date();
+            const expiry = new Date(expiryDate);
+            const diffTime = expiry - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function isSubscriptionActive(expiryDate) {
+            return getDaysRemaining(expiryDate) > 0;
+        }
 
         // ==================== DEVICE ID SYSTEM ====================
         function getDeviceId() {
@@ -1214,6 +1282,14 @@ Outside, the city was bustling with people."></textarea>
             if (userData) {
                 currentUser = JSON.parse(userData);
                 
+                // Check if subscription expired
+                if (!currentUser.isAdmin && !isSubscriptionActive(currentUser.expiryDate)) {
+                    alert('⚠️ Your subscription has expired. Please renew to continue using the service.');
+                    localStorage.removeItem('gwh_current_user');
+                    location.reload();
+                    return;
+                }
+
                 // Check device restriction
                 if (!currentUser.isAdmin && currentUser.deviceId !== getDeviceId()) {
                     alert('⚠️ This account is logged in on another device. Please logout from other device first.');
@@ -1236,7 +1312,7 @@ Outside, the city was bustling with people."></textarea>
 
         // ==================== AUTH FUNCTIONS ====================
         function clearMessages() {
-            document.querySelectorAll('.error-message, .success-message').forEach(msg => {
+            document.querySelectorAll('.error-message, .success-message, .warning-message').forEach(msg => {
                 msg.style.display = 'none';
                 msg.textContent = '';
             });
@@ -1269,6 +1345,7 @@ Outside, the city was bustling with people."></textarea>
                     isAdmin: true,
                     isPremium: true,
                     deviceId: getDeviceId(),
+                    expiryDate: addMonths(new Date(), 120), // Admin never expires
                     loginTime: new Date().toISOString()
                 };
                 localStorage.setItem('gwh_current_user', JSON.stringify(currentUser));
@@ -1282,6 +1359,12 @@ Outside, the city was bustling with people."></textarea>
             const user = users.find(u => u.username === username && u.password === password);
 
             if (user) {
+                // Check if subscription expired
+                if (!isSubscriptionActive(user.expiryDate)) {
+                    showError('loginError', '⚠️ Your subscription has expired. Please renew to continue. Contact admin on WhatsApp.');
+                    return;
+                }
+
                 // Check device restriction
                 if (user.deviceId && user.deviceId !== getDeviceId()) {
                     showError('loginError', '⚠️ This account is already logged in on another device. Only 1 device allowed per account.');
@@ -1303,6 +1386,7 @@ Outside, the city was bustling with people."></textarea>
                     isAdmin: false,
                     isPremium: true,
                     deviceId: user.deviceId,
+                    expiryDate: user.expiryDate,
                     loginTime: new Date().toISOString()
                 };
                 localStorage.setItem('gwh_current_user', JSON.stringify(currentUser));
@@ -1313,7 +1397,7 @@ Outside, the city was bustling with people."></textarea>
             }
         }
 
-        // Admin creates new user
+        // ✅ FIX: Admin creates new user and AUTO-LOGIN
         function handleAdminSignup(event) {
             event.preventDefault();
             
@@ -1355,31 +1439,58 @@ Outside, the city was bustling with people."></textarea>
                 return;
             }
 
+            // Calculate expiry date (30 days from now)
+            const expiryDate = addMonths(new Date(), 1);
+
             // Add new premium user
-            users.push({
+            const newUser = {
                 username: username,
                 email: email,
                 password: password,
                 isPremium: true,
                 deviceId: null,
+                expiryDate: expiryDate.toISOString(),
                 createdAt: new Date().toISOString(),
                 createdBy: 'admin'
-            });
+            };
 
+            users.push(newUser);
             localStorage.setItem('gwh_users', JSON.stringify(users));
-            showSuccess('adminSuccess', `✅ User "${username}" created successfully! Password: ${password}`);
+
+            // Show success message
+            showSuccess('adminSuccess', `✅ User "${username}" created successfully! Logging in...`);
             
             // Clear form
             document.getElementById('adminUsername').value = '';
             document.getElementById('adminEmail').value = '';
             document.getElementById('adminPassword').value = '';
 
-            // Reload user table
+            // ✅ AUTO-LOGIN as the newly created user
             setTimeout(() => {
-                loadUsers();
-                updateStats();
-                successEl.style.display = 'none';
-            }, 3000);
+                // Update device ID for new user
+                newUser.deviceId = getDeviceId();
+                const userIndex = users.findIndex(u => u.username === username);
+                users[userIndex] = newUser;
+                localStorage.setItem('gwh_users', JSON.stringify(users));
+
+                // Login as new user
+                currentUser = {
+                    username: newUser.username,
+                    email: newUser.email,
+                    isAdmin: false,
+                    isPremium: true,
+                    deviceId: newUser.deviceId,
+                    expiryDate: newUser.expiryDate,
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('gwh_current_user', JSON.stringify(currentUser));
+
+                // Show main app
+                alert(`✅ Account created and logged in successfully!\n\nUsername: ${username}\nPassword: ${password}\nExpiry: ${new Date(expiryDate).toLocaleDateString()}\n\nPlease save these credentials!`);
+                
+                // Reload to show main app
+                location.reload();
+            }, 2000);
         }
 
         function showMainApp() {
@@ -1397,6 +1508,20 @@ Outside, the city was bustling with people."></textarea>
 
             if (currentUser.isPremium) {
                 document.getElementById('premiumBadge').style.display = 'inline-block';
+
+                // Show expiry badge
+                const daysRemaining = getDaysRemaining(currentUser.expiryDate);
+                const expiryBadge = document.getElementById('expiryBadge');
+                expiryBadge.textContent = `📅 ${daysRemaining} days left`;
+                expiryBadge.style.display = 'inline-block';
+
+                // Show expiry warning if < 7 days
+                if (daysRemaining <= 7 && daysRemaining > 0) {
+                    const warningDiv = document.getElementById('expiryWarning');
+                    const messageDiv = document.getElementById('expiryMessage');
+                    messageDiv.textContent = `Your subscription expires in ${daysRemaining} days. Renew now to avoid service interruption!`;
+                    warningDiv.style.display = 'block';
+                }
             }
         }
 
@@ -1407,8 +1532,10 @@ Outside, the city was bustling with people."></textarea>
             document.getElementById('scriptToPromptTab').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('pageTitle').textContent = '👑 Admin Control Panel';
-            document.getElementById('pageSubtitle').textContent = 'Manage users and system settings';
+            document.getElementById('pageSubtitle').textContent = 'Manage users and subscriptions';
             document.querySelector('.channel-promo').style.display = 'none';
+            const expiryWarning = document.getElementById('expiryWarning');
+            if (expiryWarning) expiryWarning.style.display = 'none';
             loadUsers();
             updateStats();
         }
@@ -1419,6 +1546,16 @@ Outside, the city was bustling with people."></textarea>
             document.getElementById('pageTitle').textContent = '🎨 AI Tools Dashboard';
             document.getElementById('pageSubtitle').textContent = 'Premium AI Image & Prompt Tools';
             document.querySelector('.channel-promo').style.display = 'block';
+            
+            // Show expiry warning if needed
+            if (!currentUser.isAdmin) {
+                const daysRemaining = getDaysRemaining(currentUser.expiryDate);
+                if (daysRemaining <= 7 && daysRemaining > 0) {
+                    const warningDiv = document.getElementById('expiryWarning');
+                    warningDiv.style.display = 'block';
+                }
+            }
+            
             switchMainTab('generator');
         }
 
@@ -1871,11 +2008,13 @@ Outside, the city was bustling with people."></textarea>
 
             users.forEach((user, index) => {
                 const row = document.createElement('tr');
-                const joinDate = new Date(user.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
+                const expiryDate = new Date(user.expiryDate);
+                const daysRemaining = getDaysRemaining(user.expiryDate);
+                const isActive = isSubscriptionActive(user.expiryDate);
+                
+                const statusBadge = isActive 
+                    ? `<span class="badge badge-active">✅ Active</span>` 
+                    : `<span class="badge badge-expired">❌ Expired</span>`;
                 
                 const deviceStatus = user.deviceId ? '🔒 Locked' : '🔓 Available';
                 const deviceId = user.deviceId ? user.deviceId.substr(0, 15) + '...' : 'Not assigned';
@@ -1884,16 +2023,33 @@ Outside, the city was bustling with people."></textarea>
                     <td>${index + 1}</td>
                     <td><strong>${user.username}</strong></td>
                     <td>${user.email}</td>
-                    <td><span class="badge badge-premium">⭐ Premium</span></td>
+                    <td>${statusBadge}</td>
+                    <td>${expiryDate.toLocaleDateString()}<br><small>(${daysRemaining} days ${isActive ? 'left' : 'ago'})</small></td>
                     <td>${deviceStatus}<br><small>${deviceId}</small></td>
-                    <td>${joinDate}</td>
                     <td>
+                        <button class="btn-small btn-success" onclick="extendSubscription('${user.username.replace(/'/g, "\\'")}')">📅 Extend</button>
                         <button class="btn-small btn-danger" onclick="deleteUser('${user.username.replace(/'/g, "\\'")}')">🗑️ Delete</button>
-                        ${user.deviceId ? `<button class="btn-small btn-secondary" onclick="resetDevice('${user.username.replace(/'/g, "\\'")}')">🔄 Reset Device</button>` : ''}
+                        ${user.deviceId ? `<button class="btn-small btn-secondary" onclick="resetDevice('${user.username.replace(/'/g, "\\'")}')">🔄 Reset</button>` : ''}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        function extendSubscription(username) {
+            if (confirm(`Extend subscription for "${username}" by 1 month?`)) {
+                let users = JSON.parse(localStorage.getItem('gwh_users') || '[]');
+                const userIndex = users.findIndex(u => u.username === username);
+                if (userIndex !== -1) {
+                    const currentExpiry = new Date(users[userIndex].expiryDate);
+                    const newExpiry = addMonths(currentExpiry, 1);
+                    users[userIndex].expiryDate = newExpiry.toISOString();
+                    localStorage.setItem('gwh_users', JSON.stringify(users));
+                    loadUsers();
+                    updateStats();
+                    alert(`✅ Subscription extended for "${username}" until ${newExpiry.toLocaleDateString()}!`);
+                }
+            }
         }
 
         function deleteUser(username) {
@@ -1935,9 +2091,16 @@ Outside, the city was bustling with people."></textarea>
 
         function updateStats() {
             const users = JSON.parse(localStorage.getItem('gwh_users') || '[]');
+            const activeUsers = users.filter(u => isSubscriptionActive(u.expiryDate));
+            const expiringUsers = users.filter(u => {
+                const days = getDaysRemaining(u.expiryDate);
+                return days > 0 && days <= 7;
+            });
+
             document.getElementById('totalUsers').textContent = users.length;
-            document.getElementById('premiumUsers').textContent = users.filter(u => u.isPremium).length;
-            document.getElementById('totalRevenue').textContent = 'Rs ' + (users.length * 300);
+            document.getElementById('activeUsers').textContent = activeUsers.length;
+            document.getElementById('expiringUsers').textContent = expiringUsers.length;
+            document.getElementById('monthlyRevenue').textContent = 'Rs ' + (activeUsers.length * 300);
         }
 
         // ==================== UTILITY FUNCTIONS ====================
@@ -1956,12 +2119,12 @@ Outside, the city was bustling with people."></textarea>
         document.getElementById('clearBtn').addEventListener('click', clearGallery);
         document.getElementById('downloadAllBtn').addEventListener('click', downloadAllImages);
 
-        console.log('🚀 GWH Premium Platform v2.0 Loaded');
-        console.log('💰 Price: Rs 300 (One-time payment)');
-        console.log('⭐ Features: Unlimited access, all tools, lifetime validity');
+        console.log('🚀 GWH Premium Platform v2.1 (Monthly) Loaded');
+        console.log('💰 Price: Rs 300/month');
+        console.log('📅 Subscription: Monthly renewal required');
+        console.log('⭐ Features: Unlimited access, all tools');
         console.log('🔒 Device Lock: 1 account = 1 device only');
         console.log('📱 Contact: +92 323 4319689');
     </script>
 </body>
 </html>
-
