@@ -15,7 +15,7 @@
         body {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
-            color: white;
+            color: black; /* Changed text color to black */
         }
 
         /* Navigation */
@@ -1055,13 +1055,7 @@ This is another paragraph to show how the tool handles multiple paragraphs and p
         }
 
         function copyPart(index) {
-            let textToCopy = '';
-            
-            if (index === 'noneContent') {
-                textToCopy = document.getElementById('noneContent').textContent;
-            } else {
-                textToCopy = textParts[index];
-            }
+            let textToCopy = textParts[index];
 
             navigator.clipboard.writeText(textToCopy).then(() => {
                 alert('Text copied to clipboard!');
