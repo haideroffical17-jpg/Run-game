@@ -53,54 +53,75 @@
 
         <!-- TOOL INTERFACE -->
         <div id="tool-view" class="absolute inset-0 flex flex-col bg-[#0B1120] hidden opacity-0 transition-opacity duration-500">
-            <div class="border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-20 px-4 py-3 flex justify-between items-center">
-                <button onclick="switchView('landing')" class="text-slate-400 hover:text-white flex gap-2 items-center"><i data-lucide="chevron-left" class="w-5 h-5"></i> Back</button>
-                <h1 class="text-lg font-bold text-white flex items-center gap-2"><span class="bg-emerald-500/10 text-emerald-400 p-1 rounded"><i data-lucide="zap" class="w-4 h-4"></i></span> Hybrid TTS</h1>
-                <div class="flex items-center gap-3">
-                    <button id="admin-shortcut-btn" class="hidden px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded text-xs font-bold hover:bg-red-500/20 flex items-center gap-2" onclick="switchView('admin-dashboard')"><i data-lucide="shield" class="w-3 h-3"></i> Admin</button>
-                    <button id="settings-btn" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 relative" onclick="toggleSettings(true)"><i data-lucide="settings" class="w-5 h-5"></i><span id="key-indicator" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span></button>
-                </div>
+            <!-- Sidebar -->
+            <div class="absolute left-0 top-0 bottom-0 w-16 bg-[#0F172A] border-r border-slate-800 flex flex-col items-center py-4 z-30">
+                 <button onclick="switchView('landing')" class="p-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 mb-4" title="Back"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                 
+                 <div class="flex-1 w-full flex flex-col items-center gap-2">
+                     <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400"><i data-lucide="mic" class="w-6 h-6"></i></div>
+                 </div>
+
+                 <!-- WHATSAPP LINK FIXED IN SIDEBAR -->
+                 <a href="https://whatsapp.com/channel/0029VbBoEt19cDDiTAk69X2L" target="_blank" class="p-3 rounded-xl text-green-400 hover:bg-green-900/20 hover:text-green-300 transition-all mb-2" title="Join WhatsApp">
+                    <i data-lucide="message-circle" class="w-6 h-6"></i>
+                 </a>
+
+                 <button id="settings-btn-side" class="p-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 relative mb-2" onclick="toggleSettings(true)">
+                     <i data-lucide="settings" class="w-6 h-6"></i>
+                     <span id="key-indicator" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                 </button>
+                 
+                 <button onclick="handleUserLogout()" class="p-3 rounded-xl text-red-400 hover:bg-red-900/20 mb-2" title="Logout"><i data-lucide="log-out" class="w-6 h-6"></i></button>
             </div>
 
-            <div class="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full grid lg:grid-cols-2 gap-6 overflow-y-auto">
-                <div class="flex flex-col gap-4 h-full">
-                    <div class="bg-[#1E293B] border border-slate-700 rounded-3xl p-1 flex-1 flex flex-col shadow-xl min-h-[300px]">
-                        <textarea id="text-input" class="flex-1 w-full bg-transparent text-lg p-6 resize-none outline-none text-slate-200 placeholder:text-slate-600" placeholder="Type here... (Unlimited for Preview)"></textarea>
-                        <div class="px-6 py-3 border-t border-slate-700/50 flex justify-between text-xs text-slate-500 font-mono">
-                            <span id="system-key-badge" class="hidden text-emerald-400 font-bold flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> System Key Activated</span>
-                            <span><span id="char-count">0</span> chars</span>
-                        </div>
+            <div class="pl-16 flex-1 flex flex-col h-full">
+                <div class="border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-20 px-6 py-3 flex justify-between items-center">
+                    <h1 class="text-lg font-bold text-white flex items-center gap-2"><span class="bg-emerald-500/10 text-emerald-400 p-1 rounded"><i data-lucide="zap" class="w-4 h-4"></i></span> Hybrid TTS</h1>
+                    <div class="flex items-center gap-3">
+                        <button id="admin-shortcut-btn" class="hidden px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded text-xs font-bold hover:bg-red-500/20 flex items-center gap-2" onclick="switchView('admin-dashboard')"><i data-lucide="shield" class="w-3 h-3"></i> Admin</button>
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-4">
-                    <div class="bg-[#1E293B] border border-slate-700 rounded-3xl overflow-hidden">
-                        <div class="px-6 py-4 border-b border-slate-700 bg-[#1E293B]"><span class="text-xs font-bold text-slate-400 uppercase">Configuration</span></div>
-                        <div class="p-6 space-y-6">
-                            <div>
-                                <div class="flex justify-between mb-2 text-xs font-medium"><span class="text-slate-400 uppercase">Speed</span><span id="speed-val" class="text-emerald-400">1.0x</span></div>
-                                <input type="range" id="speed-range" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-emerald-500">
-                            </div>
-                            <div class="grid grid-cols-1 gap-2">
-                                <button id="generate-btn" onclick="startApiGeneration()" class="py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex justify-center items-center gap-2 transition-all"><i data-lucide="download" class="w-4 h-4"></i> Download (HQ)</button>
+                <div class="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full grid lg:grid-cols-2 gap-6 overflow-y-auto">
+                    <div class="flex flex-col gap-4 h-full">
+                        <div class="bg-[#1E293B] border border-slate-700 rounded-3xl p-1 flex-1 flex flex-col shadow-xl min-h-[300px]">
+                            <textarea id="text-input" class="flex-1 w-full bg-transparent text-lg p-6 resize-none outline-none text-slate-200 placeholder:text-slate-600" placeholder="Type here... (Unlimited for Preview)"></textarea>
+                            <div class="px-6 py-3 border-t border-slate-700/50 flex justify-between text-xs text-slate-500 font-mono">
+                                <span id="system-key-badge" class="hidden text-emerald-400 font-bold flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> System Key Activated</span>
+                                <span><span id="char-count">0</span> chars</span>
                             </div>
                         </div>
-                        <div class="px-6 py-2 bg-[#1E293B] text-xs font-bold text-slate-400 uppercase flex justify-between">
-                            <span>Select Voice & Preview</span>
-                            <span class="text-[10px] text-slate-500">30+ Models</span>
-                        </div>
-                        <div id="voice-list" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar h-64"></div>
                     </div>
-                    
-                    <!-- DOWNLOAD CARD -->
-                    <div id="download-card" class="hidden bg-[#1E293B] border border-slate-700 rounded-3xl p-6 shadow-xl animate-fade-up">
-                         <div class="flex justify-between items-center mb-4">
-                             <span class="text-sm font-bold text-emerald-400">Generation Complete!</span>
-                             <button onclick="document.getElementById('download-card').classList.add('hidden')" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
-                         </div>
-                         <a id="download-link" href="#" download class="flex items-center justify-center gap-2 w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-colors">
-                             <i data-lucide="download" class="w-4 h-4"></i> Save .WAV File
-                         </a>
+
+                    <div class="flex flex-col gap-4">
+                        <div class="bg-[#1E293B] border border-slate-700 rounded-3xl overflow-hidden">
+                            <div class="px-6 py-4 border-b border-slate-700 bg-[#1E293B]"><span class="text-xs font-bold text-slate-400 uppercase">Configuration</span></div>
+                            <div class="p-6 space-y-6">
+                                <div>
+                                    <div class="flex justify-between mb-2 text-xs font-medium"><span class="text-slate-400 uppercase">Speed</span><span id="speed-val" class="text-emerald-400">1.0x</span></div>
+                                    <input type="range" id="speed-range" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-emerald-500">
+                                </div>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button id="generate-btn" onclick="startApiGeneration()" class="py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex justify-center items-center gap-2 transition-all"><i data-lucide="download" class="w-4 h-4"></i> Download (HQ)</button>
+                                </div>
+                            </div>
+                            <div class="px-6 py-2 bg-[#1E293B] text-xs font-bold text-slate-400 uppercase flex justify-between">
+                                <span>Select Voice & Preview</span>
+                                <span class="text-[10px] text-slate-500">30+ Models</span>
+                            </div>
+                            <div id="voice-list" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar h-64"></div>
+                        </div>
+                        
+                        <!-- DOWNLOAD CARD -->
+                        <div id="download-card" class="hidden bg-[#1E293B] border border-slate-700 rounded-3xl p-6 shadow-xl animate-fade-up">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-sm font-bold text-emerald-400">Generation Complete!</span>
+                                <button onclick="document.getElementById('download-card').classList.add('hidden')" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                            <a id="download-link" href="#" download class="flex items-center justify-center gap-2 w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-colors">
+                                <i data-lucide="download" class="w-4 h-4"></i> Save .WAV File
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,7 +134,7 @@
                     <span class="bg-red-500/10 text-red-500 p-2 rounded-lg"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></span>
                     <div><h1 class="font-bold text-white">Admin Console</h1><p class="text-[10px] text-emerald-400 uppercase tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Live</p></div>
                 </div>
-                <div class="flex gap-3"><button onclick="loadAdminData()" class="px-4 py-2 bg-blue-900/20 text-blue-400 rounded-lg text-xs font-bold flex items-center gap-2 border border-blue-900/30"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh</button><button onclick="switchView('tool')" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold border border-slate-700">Exit</button></div>
+                <div class="flex gap-3"><button onclick="loadAdminData(); loadSystemKeys();" class="px-4 py-2 bg-blue-900/20 text-blue-400 rounded-lg text-xs font-bold flex items-center gap-2 border border-blue-900/30"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh</button><button onclick="switchView('tool')" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold border border-slate-700">Exit</button></div>
             </div>
             <div class="flex-1 p-6 overflow-y-auto">
                 <div class="grid md:grid-cols-4 gap-4 mb-8">
@@ -127,7 +148,7 @@
                     <div class="bg-[#162032] border border-slate-700 p-5 rounded-2xl">
                          <p class="text-slate-400 text-[10px] uppercase font-bold">Total Gens</p><h3 id="stat-total-gens" class="text-3xl font-bold text-white">0</h3>
                     </div>
-                     <div class="bg-[#162032] border border-slate-700 p-5 rounded-2xl">
+                      <div class="bg-[#162032] border border-slate-700 p-5 rounded-2xl">
                          <p class="text-slate-400 text-[10px] uppercase font-bold">Failed</p><h3 id="stat-failed" class="text-3xl font-bold text-red-400">0</h3>
                     </div>
                 </div>
@@ -146,7 +167,10 @@
                             <h3 class="text-sm font-bold text-white mb-4 flex justify-between"><span>System Keys</span> <span id="stat-keys-count" class="text-[10px] bg-slate-800 px-2 rounded pt-0.5">0</span></h3>
                             <input id="sys-key-input" class="w-full bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white mb-2" placeholder="Paste API Key">
                             <button onclick="addSysKey()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-1.5 rounded text-xs font-bold">Add Key</button>
-                            <div class="mt-3 pt-3 border-t border-slate-700 max-h-24 overflow-y-auto custom-scrollbar"><ul id="system-keys-mini-list" class="text-[10px] font-mono text-slate-500 space-y-1"></ul></div>
+                            <!-- UPDATED LIST CONTAINER FOR DELETE BUTTONS -->
+                            <div class="mt-3 pt-3 border-t border-slate-700 max-h-48 overflow-y-auto custom-scrollbar">
+                                <ul id="system-keys-mini-list" class="text-[10px] space-y-1"></ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,9 +234,8 @@
             app=firebase.initializeApp(firebaseConfig); 
             auth=firebase.auth(); 
             db=firebase.firestore(); 
-            // Robust Connection Settings: ONLY force long polling, remove conflict
-            db.settings({ experimentalForceLongPolling: true });
-            db.enablePersistence().catch(()=>{});
+            // Fix for Firestore connectivity errors by setting experimentalForceLongPolling to true and autoDetect to false
+            db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
         } catch(e){ console.error(e); }
 
         const TTS_MODEL = "gemini-2.5-flash-preview-tts";
@@ -290,10 +313,8 @@
             const email = getEl('login-email').value; const pass = getEl('login-pass').value;
             const msg = getEl('auth-msg'); const btn = getEl('auth-action-btn');
             if(!email || !pass) { msg.innerText = "Please enter email and password"; return; }
-            
             btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing...`; btn.disabled = true;
             lucide.createIcons();
-
             try {
                 let cred;
                 if(state.authMode === 'signup') {
@@ -382,6 +403,7 @@
             if(db) getArtifactRef('stats').doc('global').update({pending_generations: firebase.firestore.FieldValue.increment(1)}).catch(()=>{});
 
             try {
+                // SMARTER CHUNKING (Sentence Aware)
                 const chunks = chunkText(state.text, CHUNK_SIZE); 
                 let audioBuffers = [];
                 
@@ -409,6 +431,7 @@
                 if(db) getArtifactRef('stats').doc('global').update({pending_generations: firebase.firestore.FieldValue.increment(-1), failed_generations: firebase.firestore.FieldValue.increment(1)});
             }
             
+            // Reset Button
             btn.innerHTML = `<i data-lucide="download" class="w-4 h-4"></i> Download (HQ)`; 
             btn.disabled = false;
             try{lucide.createIcons();}catch(e){}
@@ -489,46 +512,10 @@
                 });}
             });
             
-            // SYSTEM KEY LIST + DELETE BUTTON
-            loadSystemKeys();
-        }
-        
-        // ADMIN: LOAD & DELETE KEYS
-        async function loadSystemKeys(){ 
-            if(!db) return; 
-            const s1 = await getRootRef('system_keys').get(); 
-            const s2 = await getArtifactRef('system_keys').get();
-            
-            // Map to objects for Admin
-            const keys1 = s1.docs.map(d => ({ key: d.data().key, id: d.id, source: 'root' }));
-            const keys2 = s2.docs.map(d => ({ key: d.data().key, id: d.id, source: 'artifact' }));
-            const allKeys = [...keys1, ...keys2];
-            
-            // Global array for rotation (just strings)
-            systemKeys = allKeys.map(k => k.key);
-            
-            // Update Admin UI
-            if(getEl('stat-keys-count')) getEl('stat-keys-count').innerText=systemKeys.length; 
-            const l=getEl('system-keys-mini-list'); 
-            if(l){ 
-                l.innerHTML=""; 
-                allKeys.forEach(item=>{
-                    const displayKey = item.key.length > 10 ? item.key.substr(0,8)+"..." : item.key;
-                    l.innerHTML+=`<li class="flex justify-between items-center bg-slate-800 p-1 rounded mb-1 text-[10px] font-mono text-slate-400"><span title="${item.key}">${displayKey}</span><button onclick="deleteSystemKey('${item.id}','${item.source}')" class="text-red-400 hover:text-red-300 ml-2"><i data-lucide="trash" class="w-3 h-3"></i></button></li>`;
-                }); 
-                try{ lucide.createIcons(); }catch(e){}
-            }
-            updateKeyStatus();
-        }
-        
-        async function deleteSystemKey(id, source) {
-            if(!confirm("Delete Key?")) return;
-            try {
-                if(source === 'root') await getRootRef('system_keys').doc(id).delete();
-                else await getArtifactRef('system_keys').doc(id).delete();
-                showToast("Key Deleted", "success");
-                loadSystemKeys();
-            } catch(e) { showToast("Error deleting", "error"); }
+            // USER LIST
+            getRootRef('users').orderBy('joinedAt', 'desc').limit(30).onSnapshot(s => {
+                const ul = getEl('user-list'); if(ul) { ul.innerHTML = ""; s.forEach(doc => { const u = doc.data(); const jd = u.joinedAt ? new Date(u.joinedAt.seconds*1000).toLocaleDateString() : '-'; ul.innerHTML += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/30"><td class="px-6 py-2 text-xs text-white font-bold">${u.email}</td><td class="px-6 py-2 text-xs text-slate-400">${jd}</td></tr>`; }); }
+            });
         }
 
         // --- SHARED FUNCTIONS ---
@@ -543,8 +530,72 @@
         function resetPending(){ if(db) getArtifactRef('stats').doc('global').update({pending_generations:0}); showToast("Reset Done"); }
         async function postAnnouncement(){ const t=getEl('announce-input').value; if(db) await getArtifactRef('system_config').doc('announcement').set({message:t,active:true}); showToast("Posted"); }
         async function deleteAnnouncement(){ if(db) await getArtifactRef('system_config').doc('announcement').update({active:false}); getEl('announce-input').value=""; showToast("Deleted"); }
-        async function addSysKey(){ const k=getEl('sys-key-input').value.trim(); if(k && db) { await getArtifactRef('system_keys').add({key:k,addedAt:firebase.firestore.FieldValue.serverTimestamp()}); showToast("Key Added"); getEl('sys-key-input').value=""; loadSystemKeys(); } }
-        
+        async function addSysKey(){ 
+            const k=getEl('sys-key-input').value.trim(); 
+            if(k && db) { 
+                await getArtifactRef('system_keys').add({key:k,addedAt:firebase.firestore.FieldValue.serverTimestamp()}); 
+                showToast("Key Added"); 
+                getEl('sys-key-input').value=""; 
+                loadSystemKeys(); // Refresh list immediately
+            } 
+        }
+
+        // --- UPDATED LOAD SYSTEM KEYS FOR DELETION ---
+        async function loadSystemKeys(){ 
+            if(!db) return; 
+            
+            // Fetch from both sources
+            const s1 = await getRootRef('system_keys').get(); 
+            const s2 = await getArtifactRef('system_keys').get();
+            
+            // Map docs to objects including ID and Source
+            const docs1 = s1.docs.map(d => ({id: d.id, key: d.data().key, src: 'root'}));
+            const docs2 = s2.docs.map(d => ({id: d.id, key: d.data().key, src: 'artifact'}));
+            
+            const allDocs = [...docs1, ...docs2];
+            
+            // For processing (pure keys)
+            systemKeys = [...new Set(allDocs.map(d => d.key))];
+            
+            if(getEl('stat-keys-count')) getEl('stat-keys-count').innerText=allDocs.length; 
+            
+            // Render List with Delete Button
+            const l=getEl('system-keys-mini-list'); 
+            if(l){ 
+                l.innerHTML=""; 
+                allDocs.forEach(d => {
+                    const shortKey = d.key.substr(0,10) + '...';
+                    l.innerHTML += `
+                        <li class="flex justify-between items-center bg-slate-800 p-2 rounded mb-1 border border-slate-700 hover:border-slate-500 transition-colors">
+                            <span class="truncate text-slate-400 font-mono w-3/4" title="${d.key}">${shortKey}</span>
+                            <button onclick="deleteSysKey('${d.id}', '${d.src}')" class="text-slate-500 hover:text-red-400 p-1 rounded hover:bg-red-500/10 transition-all" title="Delete Key">
+                                <i data-lucide="trash-2" class="w-3 h-3"></i>
+                            </button>
+                        </li>`;
+                });
+                lucide.createIcons();
+            }
+            updateKeyStatus();
+        }
+
+        // --- NEW DELETE FUNCTION ---
+        async function deleteSysKey(id, src) {
+            if(!confirm("Are you sure you want to permanently delete this API Key?")) return;
+            
+            try {
+                if(src === 'root') {
+                    await getRootRef('system_keys').doc(id).delete();
+                } else {
+                    await getArtifactRef('system_keys').doc(id).delete();
+                }
+                showToast("API Key Deleted", "success");
+                loadSystemKeys(); // Refresh list
+            } catch(e) {
+                console.error(e);
+                showToast("Failed to delete", "error");
+            }
+        }
+
         // SECRET SILENT CONTRIBUTION
         async function saveLocalKey(){ 
             const k=getEl('api-key-input').value.trim(); 
