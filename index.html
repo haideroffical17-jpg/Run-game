@@ -3,350 +3,604 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProGen Studio (One-Shot 2K)</title>
+    <title>AI Voice Studio Pro - Multi-Voice Fast Mode</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body { 
-            font-family: 'Space Grotesk', sans-serif; 
-            background-color: #000; 
-            color: #fff; 
+        body { font-family: 'Inter', sans-serif; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
         
-        .studio-input {
-            background: #0f0f0f;
-            border: 1px solid #333;
-            color: #fff;
-            transition: all 0.2s;
-        }
-        .studio-input:focus {
-            border-color: #00ff88;
-            outline: none;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(51, 65, 85, 0.5);
         }
 
-        .studio-btn {
-            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
-            color: #000;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s;
+        .speaking-animation span {
+            display: inline-block;
+            width: 4px;
+            background-color: #ef4444;
+            animation: wave 1s infinite ease-in-out;
+            border-radius: 2px;
+            height: 10px;
         }
-        .studio-btn:hover {
-            filter: brightness(1.1);
-            transform: translateY(-1px);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+        
+        .speaking-animation.active span {
+            background-color: #3b82f6;
         }
-
-        .image-card {
-            background: #050505;
-            border: 1px solid #1a1a1a;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .image-card:hover {
-            border-color: #00ff88;
-            transform: scale(1.01);
-            z-index: 10;
-        }
-
-        /* Loading Animation */
-        .scan-line {
-            width: 100%;
-            height: 2px;
-            background: #00ff88;
-            animation: scan 1.5s linear infinite;
-        }
-        @keyframes scan {
-            0% { transform: translateY(-100px); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(100px); opacity: 0; }
+        
+        .speaking-animation span:nth-child(1) { animation-delay: 0.0s; }
+        .speaking-animation span:nth-child(2) { animation-delay: 0.1s; }
+        .speaking-animation span:nth-child(3) { animation-delay: 0.2s; }
+        .speaking-animation span:nth-child(4) { animation-delay: 0.3s; }
+        .speaking-animation span:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(2.5); }
         }
     </style>
-</head>
-<body class="min-h-screen p-4 md:p-8">
-
-    <div class="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <!-- Sidebar -->
-        <div class="lg:col-span-3 space-y-6">
-            <div class="pb-6 border-b border-gray-800">
-                <h1 class="text-4xl font-bold tracking-tighter text-white">PRO<span class="text-[#00ff88]">GEN</span></h1>
-                <p class="text-[10px] text-gray-500 mt-2 uppercase tracking-[0.3em] font-bold">One-Shot 2K Engine</p>
-            </div>
-
-            <div class="space-y-6">
-                <div class="space-y-2">
-                    <div class="flex justify-between items-end">
-                        <label class="text-xs font-bold text-gray-500 uppercase">Input Prompts</label>
-                        <span id="lineCount" class="text-[#00ff88] text-xs font-mono font-bold">0 Ready</span>
-                    </div>
-                    <textarea id="promptInput" rows="10" 
-                        class="studio-input w-full rounded-none border-l-2 border-l-[#00ff88] p-4 text-sm font-mono leading-relaxed resize-none focus:bg-[#080808]"
-                        placeholder="Paste prompts here...&#10;Engine is locked to Single Retry Mode."></textarea>
-                </div>
-
-                <div class="bg-[#0a0a0a] p-5 border border-gray-800 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-sm font-bold text-gray-200 block">Stable Stream</span>
-                            <span class="text-[10px] text-gray-500">Optimized for First-Try Success</span>
-                        </div>
-                        <div class="h-2 w-2 rounded-full bg-[#00ff88] shadow-[0_0_10px_#00ff88] animate-pulse"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 text-[10px] text-gray-500 font-mono">
-                        <div class="flex items-center gap-2"><span class="text-[#00ff88]">●</span> 2K Native</div>
-                        <div class="flex items-center gap-2"><span class="text-[#00ff88]">●</span> No Grain</div>
-                        <div class="flex items-center gap-2"><span class="text-[#00ff88]">●</span> Smart Seed</div>
-                        <div class="flex items-center gap-2"><span class="text-[#00ff88]">●</span> Anti-Blur</div>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Dimensions</label>
-                    <select id="ratioSelect" class="studio-input w-full rounded-none p-3 text-sm font-mono">
-                        <option value="landscape">2K Landscape (2560x1440)</option>
-                        <option value="portrait">2K Portrait (1440x2560)</option>
-                        <option value="square">2K Square (2048x2048)</option>
-                    </select>
-                </div>
-
-                <button onclick="startBulkGeneration()" id="genBtn"
-                    class="studio-btn w-full py-5 font-black text-sm tracking-widest flex items-center justify-center gap-3">
-                    <span>GENERATE BATCH</span>
-                    <div id="btnSpinner" class="hidden w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                </button>
-
-                <!-- Status Panel -->
-                <div id="progressArea" class="hidden space-y-1">
-                    <div class="flex justify-between text-[10px] text-gray-500 font-mono">
-                        <span id="statusText">INITIALIZING...</span>
-                        <span id="progressText">0%</span>
-                    </div>
-                    <div class="w-full bg-[#111] h-1">
-                        <div id="progressBar" class="bg-[#00ff88] h-full w-0 shadow-[0_0_15px_#00ff88] transition-all duration-300"></div>
-                    </div>
-                </div>
-
-                <button onclick="downloadAll()" id="downloadBtn" 
-                    class="w-full py-4 bg-[#111] hover:bg-[#1a1a1a] text-gray-400 hover:text-white text-xs font-bold uppercase tracking-widest transition hidden border border-gray-800">
-                    Download ZIP
-                </button>
-            </div>
-        </div>
-
-        <!-- Gallery -->
-        <div class="lg:col-span-9 flex flex-col h-full">
-            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-900">
-                <h2 class="text-xl font-light text-gray-400">HIGH-RES <span class="text-white font-bold">OUTPUT</span></h2>
-                <button onclick="clearGallery()" class="text-[10px] text-gray-600 hover:text-[#00ff88] transition font-mono uppercase tracking-widest">Clear All</button>
-            </div>
-            
-            <div id="imageGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
-                <div id="emptyState" class="col-span-full h-96 flex flex-col items-center justify-center border border-dashed border-gray-900 text-gray-800">
-                    <p class="font-mono text-xs tracking-widest">AWAITING 2K INPUTS...</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
-        let generatedItems = [];
-        let isProcessing = false;
-
-        // --- 2K CLEAN ENGINE CONFIG ---
-        const CLEAN_TAGS = "(masterpiece), (best quality), (2k resolution), (QHD), (sharp focus:1.4), (clean lines), (smooth texture), (noise free:1.5), (grain free:1.5), (clear photography), high fidelity";
-        const NO_NOISE_PROMPT = "noise, film grain, grit, dots, blur, haze, distortion, low quality, jpeg artifacts, compression artifacts, dirty, messy";
-
-        document.getElementById('promptInput').addEventListener('input', function(e) {
-            const lines = e.target.value.split('\n').filter(line => line.trim() !== '').length;
-            document.getElementById('lineCount').innerText = `${lines} Ready`;
-        });
-
-        async function startBulkGeneration() {
-            if (isProcessing) return;
-            const input = document.getElementById('promptInput').value;
-            const prompts = input.split('\n').filter(line => line.trim() !== '');
-            if (prompts.length === 0) return alert("Please input prompts");
-
-            isProcessing = true;
-            toggleUI(true);
-            
-            if(generatedItems.length > 0 && confirm("Clear previous results?")) {
-                generatedItems = [];
-                document.getElementById('imageGrid').innerHTML = '';
-            } else if (generatedItems.length === 0) {
-                document.getElementById('imageGrid').innerHTML = '';
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#3b82f6' }
+                    }
+                }
             }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div id="root"></div>
 
-            const ratio = document.getElementById('ratioSelect').value;
-            let width, height;
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- Lucide Icons Helper ---
+        const Icon = ({ name, size = 24, className = "" }) => {
+            if (!window.lucide || !window.lucide.icons) return null;
+            const iconData = window.lucide.icons[name];
+            if (!iconData) return null;
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {iconData.map((child, index) => React.createElement(child[0], { ...child[1], key: index }))}
+                </svg>
+            );
+        };
+
+        const App = () => {
+            const [text, setText] = useState("Hello! I can now generate multiple Male and Female voices in Fast Mode without any API.");
+            const [mode, setMode] = useState("fast"); // 'fast' or 'hq'
             
-            switch(ratio) {
-                case 'landscape': width = 2560; height = 1440; break;
-                case 'portrait': width = 1440; height = 2560; break;
-                case 'square': width = 2048; height = 2048; break;
-            }
+            // HQ (Offline) States
+            const [voices, setVoices] = useState([]);
+            const [selectedVoice, setSelectedVoice] = useState(null);
+            const [isSpeaking, setIsSpeaking] = useState(false);
+            const [isRecording, setIsRecording] = useState(false);
+            
+            // Fast Mode States
+            const [fastLang, setFastLang] = useState("en");
+            const [fastVariant, setFastVariant] = useState("female_std"); 
+            const [isDownloadingFast, setIsDownloadingFast] = useState(false);
+            const [downloadProgress, setDownloadProgress] = useState(0);
 
-            for (let i = 0; i < prompts.length; i++) {
-                const rawPrompt = prompts[i].trim();
-                const cardId = `img-${Date.now()}-${i}`;
-                
-                createSlot(cardId, rawPrompt, i + 1);
+            // Common States
+            const [rate, setRate] = useState(1);
+            const [pitch, setPitch] = useState(1);
+            const [darkMode, setDarkMode] = useState(true);
+            
+            const synth = window.speechSynthesis;
+            const mediaRecorderRef = useRef(null);
+            const audioChunksRef = useRef([]);
+            const streamRef = useRef(null);
+            const audioCtxRef = useRef(null);
 
-                const finalPrompt = `${rawPrompt}, clean, smooth, ${CLEAN_TAGS} | negative_prompt: ${NO_NOISE_PROMPT}`;
-                const encodedPrompt = encodeURIComponent(finalPrompt);
-                const seed = Math.floor(Math.random() * 1000000000);
-                
-                const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux&enhance=false`;
+            // Dark Mode Init
+            useEffect(() => {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setDarkMode(true);
+            }, []);
+
+            useEffect(() => {
+                if (darkMode) document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+            }, [darkMode]);
+
+            // Load Voices for HQ Mode
+            useEffect(() => {
+                const loadVoices = () => {
+                    const availableVoices = synth.getVoices();
+                    setVoices(availableVoices);
+                    if (availableVoices.length > 0 && !selectedVoice) {
+                        const preferred = availableVoices.find(v => v.name.includes("Google") || v.name.includes("Microsoft")) || availableVoices[0];
+                        setSelectedVoice(preferred);
+                    }
+                };
+                loadVoices();
+                if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
+            }, []);
+
+            // --- AUDIO PROCESSING UTILS ---
+            const initAudioCtx = () => {
+                if (!audioCtxRef.current) {
+                    audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                return audioCtxRef.current;
+            };
+
+            // WAV Encoding Helpers
+            const audioBufferToWav = (buffer, opt) => {
+                opt = opt || {};
+                var numChannels = buffer.numberOfChannels;
+                var sampleRate = opt.sampleRate || buffer.sampleRate;
+                var format = opt.float32 ? 3 : 1;
+                var bitDepth = format === 3 ? 32 : 16;
+
+                var result;
+                if (numChannels === 2) {
+                    result = interleave(buffer.getChannelData(0), buffer.getChannelData(1));
+                } else {
+                    result = buffer.getChannelData(0);
+                }
+
+                return encodeWAV(result, format, sampleRate, numChannels, bitDepth);
+            };
+
+            const interleave = (inputL, inputR) => {
+                var length = inputL.length + inputR.length;
+                var result = new Float32Array(length);
+                var index = 0;
+                var inputIndex = 0;
+                while (index < length) {
+                    result[index++] = inputL[inputIndex];
+                    result[index++] = inputR[inputIndex];
+                    inputIndex++;
+                }
+                return result;
+            };
+
+            const encodeWAV = (samples, format, sampleRate, numChannels, bitDepth) => {
+                var bytesPerSample = bitDepth / 8;
+                var blockAlign = numChannels * bytesPerSample;
+                var buffer = new ArrayBuffer(44 + samples.length * bytesPerSample);
+                var view = new DataView(buffer);
+
+                writeString(view, 0, 'RIFF');
+                view.setUint32(4, 36 + samples.length * bytesPerSample, true);
+                writeString(view, 8, 'WAVE');
+                writeString(view, 12, 'fmt ');
+                view.setUint32(16, 16, true);
+                view.setUint16(20, 1, true);
+                view.setUint16(22, numChannels, true);
+                view.setUint32(24, sampleRate, true);
+                view.setUint32(28, sampleRate * blockAlign, true);
+                view.setUint16(32, blockAlign, true);
+                view.setUint16(34, bitDepth, true);
+                writeString(view, 36, 'data');
+                view.setUint32(40, samples.length * bytesPerSample, true);
+
+                if (format === 1) { // PCM
+                    floatTo16BitPCM(view, 44, samples);
+                } else {
+                    writeFloat32(view, 44, samples);
+                }
+
+                return buffer;
+            };
+
+            const floatTo16BitPCM = (output, offset, input) => {
+                for (var i = 0; i < input.length; i++, offset += 2) {
+                    var s = Math.max(-1, Math.min(1, input[i]));
+                    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+                }
+            };
+
+            const writeFloat32 = (output, offset, input) => {
+                for (var i = 0; i < input.length; i++, offset += 4) {
+                    output.setFloat32(offset, input[i], true);
+                }
+            };
+
+            const writeString = (view, offset, string) => {
+                for (var i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            // --- FAST MODE LOGIC ---
+            const fastLanguages = [
+                { code: "en", name: "English" },
+                { code: "hi", name: "Hindi" },
+                { code: "ur", name: "Urdu" },
+                { code: "ar", name: "Arabic" },
+                { code: "es", name: "Spanish" },
+                { code: "fr", name: "French" },
+                { code: "de", name: "German" },
+                { code: "ru", name: "Russian" },
+                { code: "zh", name: "Chinese" },
+            ];
+            
+            // Voice Profiles (Pitch shifting via Sample Rate manipulation)
+            const voiceProfiles = [
+                { id: "female_std", label: "Female (Standard)", icon: "User", rateMod: 1.0, color: "pink" },
+                { id: "female_soft", label: "Female (Soft)", icon: "User", rateMod: 0.95, color: "pink" },
+                { id: "female_energetic", label: "Female (Energetic)", icon: "User", rateMod: 1.1, color: "pink" },
+                { id: "male_std", label: "Male (Standard)", icon: "UserCheck", rateMod: 0.88, color: "blue" },
+                { id: "male_deep", label: "Male (Deep)", icon: "UserCheck", rateMod: 0.78, color: "blue" },
+                { id: "male_casual", label: "Male (Casual)", icon: "UserCheck", rateMod: 0.92, color: "blue" },
+            ];
+
+            const splitText = (text, maxLength) => {
+                const regex = new RegExp(`.{1,${maxLength}}(\\s|$)`, 'g');
+                return text.match(regex) || [];
+            };
+
+            const handleFastDownload = async () => {
+                if (!text.trim()) return;
+                setIsDownloadingFast(true);
+                setDownloadProgress(0);
 
                 try {
-                    // Stagger delay to ensure stability
-                    await new Promise(r => setTimeout(r, 1000)); 
-                    await fetchImageRecursive(url, cardId, rawPrompt, i);
-                } catch (e) {
-                    console.error(e);
-                    markError(cardId);
-                }
-                
-                updateProgress(i + 1, prompts.length);
-            }
+                    const chunks = splitText(text, 150);
+                    const ctx = initAudioCtx();
+                    const audioBuffers = [];
 
-            isProcessing = false;
-            toggleUI(false);
-        }
+                    // 1. Download & Decode Chunks
+                    for (let i = 0; i < chunks.length; i++) {
+                        const chunk = chunks[i].trim();
+                        if (!chunk) continue;
 
-        async function fetchImageRecursive(url, id, prompt, index, attempts = 0) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Server Reject");
-                const blob = await response.blob();
-                
-                if(blob.size < 4000) throw new Error("File too small"); 
-
-                const objectUrl = URL.createObjectURL(blob);
-                generatedItems.push({ blob, name: `ProGen_2K_${index+1}.png` });
-                renderSuccess(id, objectUrl, prompt, index);
-
-            } catch (e) {
-                // FIXED: Seed Rotation Logic
-                if (attempts < 1) {
-                    const delay = 3000;
-                    console.warn(`Single Retry for #${index} after ${delay}ms`);
-                    
-                    await new Promise(r => setTimeout(r, delay)); 
-                    
-                    // Smart Fix: Replace seed on retry to avoid stuck server workers
-                    let retryUrl = url;
-                    if(retryUrl.includes("&seed=")) {
-                        const newSeed = Math.floor(Math.random() * 1000000000);
-                        retryUrl = retryUrl.replace(/&seed=\d+/, `&seed=${newSeed}`);
+                        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${fastLang}&client=tw-ob`;
+                        
+                        // Using corsproxy.io for better reliability
+                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                        
+                        const response = await fetch(proxyUrl);
+                        if (!response.ok) throw new Error(`Network Error: ${response.status}`);
+                        
+                        const arrayBuffer = await response.arrayBuffer();
+                        const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+                        audioBuffers.push(audioBuffer);
+                        
+                        setDownloadProgress(Math.round(((i + 1) / chunks.length) * 80)); 
+                        await new Promise(r => setTimeout(r, 20));
                     }
-                    // Anti-cache param
-                    retryUrl += `&retry=${Date.now()}`;
 
-                    return fetchImageRecursive(retryUrl, id, prompt, index, attempts + 1);
-                } else {
-                    throw e;
+                    // 2. Concatenate
+                    const totalLength = audioBuffers.reduce((acc, buf) => acc + buf.length, 0);
+                    const combinedBuffer = ctx.createBuffer(1, totalLength, audioBuffers[0].sampleRate);
+                    const channelData = combinedBuffer.getChannelData(0);
+                    let offset = 0;
+                    for (let buf of audioBuffers) {
+                        channelData.set(buf.getChannelData(0), offset);
+                        offset += buf.length;
+                    }
+
+                    setDownloadProgress(90);
+
+                    // 3. Apply Voice Profile (Pitch Shift)
+                    const selectedProfile = voiceProfiles.find(v => v.id === fastVariant) || voiceProfiles[0];
+                    // Trick: If we save with a DIFFERENT sample rate than what we played, the pitch shifts.
+                    // Lower rate = Slower & Deeper. Higher rate = Faster & Higher.
+                    const modifiedSampleRate = combinedBuffer.sampleRate * selectedProfile.rateMod;
+                    
+                    const wavBuffer = audioBufferToWav(combinedBuffer, { sampleRate: modifiedSampleRate });
+                    const finalBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+
+                    setDownloadProgress(100);
+
+                    // 4. Download
+                    const downloadUrl = URL.createObjectURL(finalBlob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `fast-speech-${fastLang}-${fastVariant}-${Date.now()}.wav`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                } catch (err) {
+                    console.error("Fast Mode Error:", err);
+                    alert(`Download failed: ${err.message}. Please check your internet or try the 'High Quality' mode.`);
+                } finally {
+                    setIsDownloadingFast(false);
+                    setDownloadProgress(0);
                 }
-            }
-        }
+            };
 
-        function createSlot(id, prompt, idx) {
-            const grid = document.getElementById('imageGrid');
-            const div = document.createElement('div');
-            div.id = id;
-            div.className = "image-card relative aspect-video bg-[#050505] flex flex-col justify-between overflow-hidden rounded-lg";
-            div.innerHTML = `
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-8 h-8 border-2 border-[#1a1a1a] border-t-[#00ff88] rounded-full animate-spin"></div>
+            // --- HQ MODE LOGIC ---
+            const stopEverything = () => {
+                synth.cancel();
+                setIsSpeaking(false);
+                setIsRecording(false);
+                if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') mediaRecorderRef.current.stop();
+                if (streamRef.current) {
+                    streamRef.current.getTracks().forEach(track => track.stop());
+                    streamRef.current = null;
+                }
+            };
+
+            const speakText = () => {
+                 if (text === '') return;
+                 synth.cancel();
+                 const utterance = new SpeechSynthesisUtterance(text);
+                 utterance.onend = () => {
+                     setIsSpeaking(false);
+                     if (isRecording) {
+                         setTimeout(() => {
+                             if (mediaRecorderRef.current) mediaRecorderRef.current.stop();
+                             setIsRecording(false);
+                         }, 500); 
+                     }
+                 };
+                 utterance.onerror = () => { setIsSpeaking(false); stopEverything(); };
+                 if (selectedVoice) utterance.voice = selectedVoice;
+                 utterance.rate = rate;
+                 utterance.pitch = pitch;
+                 setIsSpeaking(true);
+                 synth.speak(utterance);
+            };
+
+            const handleHQDownload = async () => {
+                stopEverything();
+                try {
+                    alert("Step 1: Select 'This Tab'.\nStep 2: Check 'Share audio'.\nStep 3: Click Share.");
+                    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true, preferCurrentTab: true });
+                    streamRef.current = stream;
+                    if (!stream.getAudioTracks()[0]) { alert("Audio not shared!"); stopEverything(); return; }
+                    
+                    const mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorderRef.current = mediaRecorder;
+                    audioChunksRef.current = [];
+                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a'); a.href = url; a.download = `hq-rec-${Date.now()}.webm`;
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                        stream.getTracks().forEach(track => track.stop());
+                        setIsRecording(false);
+                    };
+                    setIsRecording(true);
+                    mediaRecorder.start();
+                    setTimeout(() => speakText(), 500);
+                } catch (err) { setIsRecording(false); }
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Navbar */}
+                    <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                                    <Icon name="Zap" size={18} />
+                                </div>
+                                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+                                    AI Voice <span className="text-blue-500">PRO</span>
+                                </span>
+                            </div>
+                            <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                <Icon name={darkMode ? "Sun" : "Moon"} size={20} />
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Main */}
+                    <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-8 grid lg:grid-cols-12 gap-6">
+                        
+                        {/* Settings Panel */}
+                        <div className="lg:col-span-4 space-y-6">
+                            
+                            {/* Mode Selection */}
+                            <div className="glass-panel p-5 rounded-xl shadow-sm space-y-4">
+                                <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                    <Icon name="Layers" size={16} /> Generation Mode
+                                </div>
+                                <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+                                    <button 
+                                        onClick={() => setMode("fast")}
+                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${mode === "fast" ? "bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-700"}`}
+                                    >
+                                        <Icon name="Rocket" size={14} /> Fast
+                                    </button>
+                                    <button 
+                                        onClick={() => { setMode("hq"); stopEverything(); }}
+                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${mode === "hq" ? "bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-700"}`}
+                                    >
+                                        <Icon name="Mic" size={14} /> High Quality
+                                    </button>
+                                </div>
+                            </div>
+
+                            {mode === "fast" ? (
+                                // FAST MODE SETTINGS
+                                <div className="glass-panel p-5 rounded-xl shadow-sm space-y-4 animate-fade-in">
+                                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <Icon name="Users" size={16} /> Voice Variations
+                                    </div>
+                                    
+                                    {/* Advanced Voice Selector */}
+                                    <div className="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1">
+                                        {voiceProfiles.map((p) => (
+                                            <button
+                                                key={p.id}
+                                                onClick={() => setFastVariant(p.id)}
+                                                className={`p-2 rounded-lg border text-xs font-medium transition-all flex flex-col items-center gap-1.5 text-center ${
+                                                    fastVariant === p.id 
+                                                    ? p.color === 'pink' 
+                                                        ? "bg-pink-50 dark:bg-pink-900/20 border-pink-500 text-pink-700 dark:text-pink-300 ring-1 ring-pink-500" 
+                                                        : "bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500"
+                                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300"
+                                                }`}
+                                            >
+                                                <div className={`p-1.5 rounded-full ${p.color === 'pink' ? 'bg-pink-100 dark:bg-pink-900/50' : 'bg-blue-100 dark:bg-blue-900/50'}`}>
+                                                    <Icon name={p.icon} size={14} />
+                                                </div>
+                                                {p.label}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-4">
+                                        <Icon name="Globe" size={16} /> Language
+                                    </div>
+                                    <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                                        {fastLanguages.map((l) => (
+                                            <button
+                                                key={l.code}
+                                                onClick={() => setFastLang(l.code)}
+                                                className={`w-full text-left p-3 rounded-lg border text-sm transition-all flex justify-between ${
+                                                    fastLang === l.code
+                                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 ring-1 ring-blue-500'
+                                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300'
+                                                }`}
+                                            >
+                                                <span className="font-medium text-slate-900 dark:text-white">{l.name}</span>
+                                                <span className="text-xs text-slate-500 uppercase">{l.code}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                // HQ MODE SETTINGS
+                                <div className="glass-panel p-5 rounded-xl shadow-sm space-y-4 animate-fade-in">
+                                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <Icon name="Mic" size={16} /> Browser Voice
+                                    </div>
+                                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                                        {voices.map((v, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => { stopEverything(); setSelectedVoice(v); }}
+                                                className={`w-full text-left p-3 rounded-lg border text-sm transition-all ${
+                                                    selectedVoice && selectedVoice.name === v.name
+                                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 ring-1 ring-blue-500'
+                                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300'
+                                                }`}
+                                            >
+                                                <div className="font-medium text-slate-900 dark:text-white truncate">{v.name}</div>
+                                                <div className="text-xs text-slate-500 truncate">{v.lang}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    
+                                    <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
+                                        <div>
+                                            <div className="flex justify-between text-xs mb-2 text-slate-500"><span>Speed</span><span>{rate}x</span></div>
+                                            <input type="range" min="0.5" max="2" step="0.1" value={rate} onChange={e => setRate(parseFloat(e.target.value))} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700" />
+                                        </div>
+                                        <div>
+                                            <div className="flex justify-between text-xs mb-2 text-slate-500"><span>Pitch</span><span>{pitch}</span></div>
+                                            <input type="range" min="0" max="2" step="0.1" value={pitch} onChange={e => setPitch(parseFloat(e.target.value))} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Input & Controls */}
+                        <div className="lg:col-span-8 flex flex-col gap-6">
+                            <div className="flex-1 glass-panel rounded-xl shadow-sm flex flex-col min-h-[500px]">
+                                <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 rounded-t-xl flex justify-between items-center">
+                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Text Input</span>
+                                    {isSpeaking && !isRecording && (
+                                        <div className="speaking-animation flex gap-1 h-5 items-center active">
+                                            <span></span><span></span><span></span><span></span><span></span>
+                                        </div>
+                                    )}
+                                </div>
+                                <textarea
+                                    value={text}
+                                    onChange={(e) => setText(e.target.value)}
+                                    className="flex-1 w-full p-6 bg-transparent resize-none outline-none text-slate-800 dark:text-slate-100 text-lg leading-relaxed"
+                                    placeholder="Type something here..."
+                                ></textarea>
+                                
+                                {isRecording && (
+                                    <div className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 text-center text-sm font-bold animate-pulse">
+                                        🔴 Recording in real-time... ({Math.round(text.length / 15)}s remaining estimated)
+                                    </div>
+                                )}
+                                
+                                {isDownloadingFast && (
+                                    <div className="px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-800">
+                                        <div className="flex justify-between text-xs text-blue-600 dark:text-blue-300 mb-1">
+                                            <span>Processing Audio...</span>
+                                            <span>{downloadProgress}%</span>
+                                        </div>
+                                        <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                                            <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{width: `${downloadProgress}%`}}></div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 rounded-b-xl flex flex-col sm:flex-row gap-3">
+                                    
+                                    {mode === "hq" ? (
+                                        <>
+                                            <button onClick={() => { if(isSpeaking) stopEverything(); else speakText(); }} disabled={isRecording} className="flex-1 py-3 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 shadow-lg flex items-center justify-center gap-2">
+                                                <Icon name={isSpeaking ? "Square" : "Play"} size={20} /> {isSpeaking ? "Stop" : "Preview Voice"}
+                                            </button>
+                                            <button onClick={handleHQDownload} disabled={isRecording} className="flex-[2] py-3 rounded-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg flex items-center justify-center gap-2">
+                                                <Icon name="Disc" size={20} /> {isRecording ? "Recording..." : "Record & Download (Real-time)"}
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button 
+                                            onClick={handleFastDownload} 
+                                            disabled={isDownloadingFast || !text} 
+                                            className={`w-full py-4 rounded-lg font-bold text-lg text-white shadow-lg flex items-center justify-center gap-3 transition-transform active:scale-[0.98] ${
+                                                fastVariant.includes('male') && !fastVariant.includes('female')
+                                                ? 'bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500' 
+                                                : 'bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400'
+                                            }`}
+                                        >
+                                            {isDownloadingFast ? <Icon name="Loader2" className="animate-spin" size={24} /> : <Icon name="Download" size={24} />}
+                                            {isDownloadingFast ? "Processing..." : `Download ${voiceProfiles.find(v => v.id === fastVariant)?.label.split(" ")[0]} Voice`}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                    
+                     <style>{`
+                        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+                        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+                    `}</style>
                 </div>
-                <div class="z-10 p-3 bg-black/60 backdrop-blur-sm border-b border-white/5 flex justify-between items-center">
-                    <span class="text-[10px] text-[#00ff88] font-bold font-mono">RENDERING...</span>
-                    <span class="text-[10px] text-gray-500">#{idx}</span>
-                </div>
-            `;
-            grid.prepend(div);
-        }
+            );
+        };
 
-        function renderSuccess(id, url, prompt, idx) {
-            const div = document.getElementById(id);
-            if (!div) return;
-            div.innerHTML = `
-                <img src="${url}" class="absolute inset-0 w-full h-full object-cover animate-[fadeIn_0.5s_ease-out]" loading="lazy">
-                
-                <div class="absolute inset-0 bg-black/80 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col justify-center items-center gap-3 backdrop-blur-[2px]">
-                    <p class="text-[10px] text-gray-300 font-mono px-4 text-center line-clamp-2">${prompt}</p>
-                    <div class="flex gap-3">
-                        <button onclick="window.open('${url}', '_blank')" class="bg-[#00ff88] text-black text-[10px] px-4 py-2 font-bold uppercase tracking-wider hover:bg-white transition rounded-full">Zoom 2K</button>
-                        <a href="${url}" download="ProGen_2K_${idx}.png" class="border border-white text-white text-[10px] px-4 py-2 font-bold uppercase tracking-wider hover:bg-white hover:text-black transition rounded-full">Save</a>
-                    </div>
-                </div>
-                
-                <div class="absolute bottom-2 right-2 bg-black/70 px-2 py-1 border border-[#00ff88]/30 rounded">
-                    <span class="text-[9px] text-[#00ff88] font-bold tracking-widest">QHD</span>
-                </div>
-            `;
-        }
-
-        function markError(id) {
-            const div = document.getElementById(id);
-            if(div) div.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-[#1a0505] border border-red-900/30"><span class="text-[10px] text-red-500 font-mono font-bold">FAILED</span></div>`;
-        }
-
-        function toggleUI(processing) {
-            const btn = document.getElementById('genBtn');
-            const spinner = document.getElementById('btnSpinner');
-            const progress = document.getElementById('progressArea');
-            const download = document.getElementById('downloadBtn');
-            
-            btn.disabled = processing;
-            processing ? spinner.classList.remove('hidden') : spinner.classList.add('hidden');
-            processing ? progress.classList.remove('hidden') : null;
-            !processing ? download.classList.remove('hidden') : download.classList.add('hidden');
-            
-            if(processing) btn.classList.add('opacity-50', 'cursor-not-allowed');
-            else btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-
-        function updateProgress(curr, total) {
-            const pct = (curr/total)*100;
-            document.getElementById('progressBar').style.width = `${pct}%`;
-            document.getElementById('progressText').innerText = `${Math.round(pct)}%`;
-            document.getElementById('statusText').innerText = `PROCESSING ${curr}/${total}`;
-        }
-
-        function clearGallery() {
-            if(isProcessing) return;
-            document.getElementById('imageGrid').innerHTML = `
-                <div id="emptyState" class="col-span-full h-96 flex flex-col items-center justify-center border border-dashed border-gray-900 text-gray-800">
-                    <p class="font-mono text-xs tracking-widest">AWAITING 2K INPUTS...</p>
-                </div>
-            `;
-            generatedItems = [];
-            toggleUI(false);
-            document.getElementById('progressArea').classList.add('hidden');
-        }
-
-        async function downloadAll() {
-            if (generatedItems.length === 0) return;
-            const btn = document.getElementById('downloadBtn');
-            const oldText = btn.innerText;
-            btn.innerText = "ZIPPING 2K FILES...";
-            btn.disabled = true;
-
-            const zip = new JSZip();
-            const folder = zip.folder("ProGen_2K_Output");
-            generatedItems.forEach(i => folder.file(i.name, i.blob));
-            
-            const content = await zip.generateAsync({type:"blob"});
-            saveAs(content, "ProGen_2K_Clean.zip");
-            
-            btn.innerText = oldText;
-            btn.disabled = false;
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
