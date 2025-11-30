@@ -3,604 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Voice Studio Pro - Multi-Voice Fast Mode</title>
-    
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
+    <title>AI Creator Studio - Hybrid Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FIREBASE SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
-        
-        .dark .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(51, 65, 85, 0.5);
-        }
-
-        .speaking-animation span {
-            display: inline-block;
-            width: 4px;
-            background-color: #ef4444;
-            animation: wave 1s infinite ease-in-out;
-            border-radius: 2px;
-            height: 10px;
-        }
-        
-        .speaking-animation.active span {
-            background-color: #3b82f6;
-        }
-        
-        .speaking-animation span:nth-child(1) { animation-delay: 0.0s; }
-        .speaking-animation span:nth-child(2) { animation-delay: 0.1s; }
-        .speaking-animation span:nth-child(3) { animation-delay: 0.2s; }
-        .speaking-animation span:nth-child(4) { animation-delay: 0.3s; }
-        .speaking-animation span:nth-child(5) { animation-delay: 0.4s; }
-        
-        @keyframes wave {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(2.5); }
-        }
+        @keyframes pulse-emerald { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } }
+        .admin-pulse { animation: pulse-emerald 2s infinite; }
+        .animate-fade-up { animation: fade-in-up 0.3s ease-out forwards; }
+        @keyframes fade-in-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
+</head>
+<body class="bg-[#0B1120] text-white font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- GLOBAL ANNOUNCEMENT -->
+    <div id="global-announcement" class="hidden bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-2 text-sm font-bold text-center shadow-lg z-[100] relative animate-fade-up flex justify-center items-center gap-2">
+        <i data-lucide="megaphone" class="w-4 h-4"></i> <span id="announcement-text"></span>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="app-container" class="flex-1 w-full h-full relative">
+        
+        <!-- LANDING -->
+        <div id="landing-view" class="absolute inset-0 flex flex-col items-center justify-center p-6 z-10 transition-opacity duration-500">
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-900/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="bg-[#1E293B] border border-slate-700/50 px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest text-indigo-300 uppercase mb-6 shadow-lg">Powered by Grow with Haider</div>
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-10 text-center">AI Creator Studio<br/><span class="text-emerald-400 text-2xl font-medium">Hybrid Edition</span></h1>
+            
+            <button onclick="checkAuthAndStart()" class="group relative bg-[#162032] border border-slate-800 rounded-3xl p-10 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl cursor-pointer transform hover:-translate-y-1 max-w-md w-full flex flex-col items-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg mb-6"><i data-lucide="mic" class="w-10 h-10 text-white"></i></div>
+                <h3 class="text-2xl font-bold text-white mb-2">Start Generating</h3>
+                <p class="text-slate-400 text-sm mb-6">30+ Premium Voices • Unlimited Preview</p>
+                <span class="flex items-center gap-2 px-6 py-2 bg-emerald-500/10 text-emerald-400 rounded-full text-sm font-bold group-hover:bg-emerald-500 group-hover:text-white transition-all">Open Studio <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+            </button>
+
+            <a href="https://whatsapp.com/channel/0029VbBoEt19cDDiTAk69X2L" target="_blank" class="mt-8 flex items-center gap-2 text-slate-400 hover:text-emerald-400 transition-colors text-sm font-medium animate-fade-up" style="animation-delay: 0.1s">
+                <i data-lucide="message-circle" class="w-5 h-5"></i> Join channel for more tools and updates
+            </a>
+        </div>
+
+        <!-- TOOL INTERFACE -->
+        <div id="tool-view" class="absolute inset-0 flex flex-col bg-[#0B1120] hidden opacity-0 transition-opacity duration-500">
+            <div class="border-b border-slate-800 bg-[#0F172A]/80 backdrop-blur-md sticky top-0 z-20 px-4 py-3 flex justify-between items-center">
+                <button onclick="switchView('landing')" class="text-slate-400 hover:text-white flex gap-2 items-center"><i data-lucide="chevron-left" class="w-5 h-5"></i> Back</button>
+                <h1 class="text-lg font-bold text-white flex items-center gap-2"><span class="bg-emerald-500/10 text-emerald-400 p-1 rounded"><i data-lucide="zap" class="w-4 h-4"></i></span> Hybrid TTS</h1>
+                <div class="flex items-center gap-3">
+                    <button id="admin-shortcut-btn" class="hidden px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded text-xs font-bold hover:bg-red-500/20 flex items-center gap-2" onclick="switchView('admin-dashboard')"><i data-lucide="shield" class="w-3 h-3"></i> Admin</button>
+                    <button id="settings-btn" class="p-2 rounded-full hover:bg-slate-800 text-slate-400 relative" onclick="toggleSettings(true)"><i data-lucide="settings" class="w-5 h-5"></i><span id="key-indicator" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span></button>
+                </div>
+            </div>
+
+            <div class="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full grid lg:grid-cols-2 gap-6 overflow-y-auto">
+                <div class="flex flex-col gap-4 h-full">
+                    <div class="bg-[#1E293B] border border-slate-700 rounded-3xl p-1 flex-1 flex flex-col shadow-xl min-h-[300px]">
+                        <textarea id="text-input" class="flex-1 w-full bg-transparent text-lg p-6 resize-none outline-none text-slate-200 placeholder:text-slate-600" placeholder="Type here... (Unlimited for Preview)"></textarea>
+                        <div class="px-6 py-3 border-t border-slate-700/50 flex justify-between text-xs text-slate-500 font-mono">
+                            <span id="system-key-badge" class="hidden text-emerald-400 font-bold flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> System Key Activated</span>
+                            <span><span id="char-count">0</span> chars</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <div class="bg-[#1E293B] border border-slate-700 rounded-3xl overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-700 bg-[#1E293B]"><span class="text-xs font-bold text-slate-400 uppercase">Configuration</span></div>
+                        <div class="p-6 space-y-6">
+                            <div>
+                                <div class="flex justify-between mb-2 text-xs font-medium"><span class="text-slate-400 uppercase">Speed</span><span id="speed-val" class="text-emerald-400">1.0x</span></div>
+                                <input type="range" id="speed-range" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-emerald-500">
+                            </div>
+                            <div class="grid grid-cols-1 gap-2">
+                                <button id="generate-btn" onclick="startApiGeneration()" class="py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex justify-center items-center gap-2 transition-all"><i data-lucide="download" class="w-4 h-4"></i> Download (HQ)</button>
+                            </div>
+                        </div>
+                        <div class="px-6 py-2 bg-[#1E293B] text-xs font-bold text-slate-400 uppercase flex justify-between">
+                            <span>Select Voice & Preview</span>
+                            <span class="text-[10px] text-slate-500">30+ Models</span>
+                        </div>
+                        <div id="voice-list" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar h-64"></div>
+                    </div>
+                    
+                    <!-- DOWNLOAD CARD -->
+                    <div id="download-card" class="hidden bg-[#1E293B] border border-slate-700 rounded-3xl p-6 shadow-xl animate-fade-up">
+                         <div class="flex justify-between items-center mb-4">
+                             <span class="text-sm font-bold text-emerald-400">Generation Complete!</span>
+                             <button onclick="document.getElementById('download-card').classList.add('hidden')" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                         </div>
+                         <a id="download-link" href="#" download class="flex items-center justify-center gap-2 w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-colors">
+                             <i data-lucide="download" class="w-4 h-4"></i> Save .WAV File
+                         </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN DASHBOARD -->
+        <div id="admin-dashboard-view" class="absolute inset-0 bg-[#0B1120] flex flex-col hidden opacity-0 transition-opacity z-50">
+            <div class="border-b border-red-900/30 bg-[#1E293B] px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+                <div class="flex items-center gap-3">
+                    <span class="bg-red-500/10 text-red-500 p-2 rounded-lg"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></span>
+                    <div><h1 class="font-bold text-white">Admin Console</h1><p class="text-[10px] text-emerald-400 uppercase tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Live</p></div>
+                </div>
+                <div class="flex gap-3"><button onclick="loadAdminData()" class="px-4 py-2 bg-blue-900/20 text-blue-400 rounded-lg text-xs font-bold flex items-center gap-2 border border-blue-900/30"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh</button><button onclick="switchView('tool')" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold border border-slate-700">Exit</button></div>
+            </div>
+            <div class="flex-1 p-6 overflow-y-auto">
+                <div class="grid md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-[#162032] border border-slate-700 p-5 rounded-2xl">
+                         <p class="text-slate-400 text-[10px] uppercase font-bold">Total Users</p><h3 id="stat-total-users" class="text-3xl font-bold text-white">0</h3>
+                    </div>
+                    <div class="bg-[#162032] border border-slate-700 p-5 rounded-2xl relative">
+                        <div class="flex justify-between items-start mb-2"><p class="text-slate-400 text-[10px] uppercase font-bold">Processing Now</p><button onclick="resetPending()" class="text-slate-600 hover:text-white" title="Force Reset"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button></div>
+                        <h3 id="stat-pending" class="text-3xl font-bold text-yellow-400">0</h3>
+                    </div>
+                    <div class="bg-[#162032] border border-slate-700 p-5 rounded-2xl">
+                         <p class="text-slate-400 text-[10px] uppercase font-bold">Total Gens</p><h3 id="stat-total-gens" class="text-3xl font-bold text-white">0</h3>
+                    </div>
+                     <div class="bg-[#162032] border border-slate-700 p-5 rounded-2xl">
+                         <p class="text-slate-400 text-[10px] uppercase font-bold">Failed</p><h3 id="stat-failed" class="text-3xl font-bold text-red-400">0</h3>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-[#1E293B] border border-slate-700 rounded-2xl overflow-hidden shadow-xl flex flex-col h-[400px]">
+                        <div class="px-6 py-4 border-b border-slate-700 bg-[#1E293B]"><h2 class="text-sm font-bold text-white">Activity Logs (Full Text)</h2></div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar"><table class="w-full text-left text-sm text-slate-400"><tbody id="activity-log-list"></tbody></table></div>
+                    </div>
+                    <div class="space-y-6">
+                         <div class="bg-[#1E293B] border border-slate-700 rounded-2xl p-6">
+                            <h3 class="text-sm font-bold text-white mb-4">Announcement</h3>
+                            <textarea id="announce-input" class="w-full bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white mb-2 h-20" placeholder="Message..."></textarea>
+                            <button onclick="postAnnouncement()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-1.5 rounded text-xs font-bold">Post Live</button>
+                        </div>
+                         <div class="bg-[#1E293B] border border-slate-700 rounded-2xl p-6">
+                            <h3 class="text-sm font-bold text-white mb-4 flex justify-between"><span>System Keys</span> <span id="stat-keys-count" class="text-[10px] bg-slate-800 px-2 rounded pt-0.5">0</span></h3>
+                            <input id="sys-key-input" class="w-full bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white mb-2" placeholder="Paste API Key">
+                            <button onclick="addSysKey()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-1.5 rounded text-xs font-bold">Add Key</button>
+                            <div class="mt-3 pt-3 border-t border-slate-700 max-h-24 overflow-y-auto custom-scrollbar"><ul id="system-keys-mini-list" class="text-[10px] font-mono text-slate-500 space-y-1"></ul></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS & AUTH MODALS -->
+        <div id="settings-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-start justify-center pt-20 hidden">
+            <div class="bg-[#1E293B] border border-slate-700 rounded-2xl p-6 w-full max-w-md relative">
+                <button onclick="toggleSettings(false)" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <h3 class="text-white font-bold mb-4">API Settings</h3>
+                <p class="text-[10px] text-slate-400 mb-3">Enter your own API Key. It will be kept local.</p>
+                <input id="api-key-input" type="password" placeholder="Personal API Key..." class="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white mb-4">
+                <button onclick="saveLocalKey()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold">Save Key</button>
+                <button onclick="clearLocalKeys()" class="w-full mt-2 bg-red-900/20 text-red-400 hover:bg-red-900/40 py-2 rounded-lg text-xs">Remove Key</button>
+            </div>
+        </div>
+        
+        <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center hidden animate-fade-up">
+            <div class="bg-[#1E293B] border border-slate-700 rounded-3xl p-8 w-full max-w-md relative shadow-2xl">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Welcome Back</h2>
+                    <p class="text-slate-400 text-sm mt-1">Join the Creator Studio</p>
+                </div>
+                
+                <!-- EMAIL TABS -->
+                <div class="flex bg-[#0B1120] p-1 rounded-xl mb-6">
+                    <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-sm font-bold rounded-lg text-white bg-slate-700 transition-all">Login</button>
+                    <button id="tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2.5 text-sm font-bold rounded-lg text-slate-400 hover:text-white transition-all">Create Account</button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-4 top-3.5 w-5 h-5 text-slate-500"></i>
+                        <input id="login-email" placeholder="Email Address" class="w-full bg-[#0B1120] border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white focus:border-emerald-500 outline-none transition-all">
+                    </div>
+                    <div class="relative">
+                        <i data-lucide="lock" class="absolute left-4 top-3.5 w-5 h-5 text-slate-500"></i>
+                        <input id="login-pass" type="password" placeholder="Password" class="w-full bg-[#0B1120] border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white focus:border-emerald-500 outline-none transition-all">
+                    </div>
+                    <button id="auth-action-btn" onclick="handleUserAuth()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/20 transition-all active:scale-95">
+                        Login / Sign Up
+                    </button>
+                </div>
+                <p id="auth-msg" class="text-center text-red-400 text-xs mt-4 min-h-[1rem] font-medium"></p>
+            </div>
+        </div>
+        
+        <div id="toast-box" class="fixed bottom-6 right-6 bg-[#1E293B] border-l-4 border-emerald-500 text-white p-4 rounded shadow-2xl hidden z-[70]"></div>
+    </div>
 
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 500: '#3b82f6' }
+        const firebaseConfig = {apiKey: "AIzaSyBAbtakEQ9vl9Khz91D8HD8uDeQR8nUHa4",authDomain: "creator-studio-new.firebaseapp.com",projectId: "creator-studio-new",storageBucket: "creator-studio-new.firebasestorage.app",messagingSenderId: "512739989726",appId: "1:512739989726:web:84b798168ca876ff628a4f"};
+        const ADMIN_EMAIL = "haideroffical16@gmail.com";
+        const appId = "creator-studio-new";
+        let app, auth, db, systemKeys=[];
+        let nativeVoices = [];
+        let previewTimeout = null;
+        
+        try { 
+            app=firebase.initializeApp(firebaseConfig); 
+            auth=firebase.auth(); 
+            db=firebase.firestore(); 
+            // Robust Connection Settings: ONLY force long polling, remove conflict
+            db.settings({ experimentalForceLongPolling: true });
+            db.enablePersistence().catch(()=>{});
+        } catch(e){ console.error(e); }
+
+        const TTS_MODEL = "gemini-2.5-flash-preview-tts";
+        const CHUNK_SIZE = 1000; 
+        const VOICES = [
+            {id:"Fenrir",gender:"Male"}, {id:"Kore",gender:"Female"}, {id:"Puck",gender:"Male"}, {id:"Aoede",gender:"Female"},
+            {id:"Charon",gender:"Male"}, {id:"Zephyr",gender:"Male"}, {id:"Leda",gender:"Female"}, {id:"Orus",gender:"Male"},
+            {id:"Umbriel",gender:"Male"}, {id:"Iapetus",gender:"Male"}, {id:"Callirrhoe",gender:"Female"}, {id:"Autonoe",gender:"Female"},
+            {id:"Enceladus",gender:"Male"}, {id:"Algieba",gender:"Female"}, {id:"Despina",gender:"Female"}, {id:"Erinome",gender:"Female"},
+            {id:"Algenib",gender:"Male"}, {id:"Rasalgethi",gender:"Male"}, {id:"Laomedeia",gender:"Female"}, {id:"Achernar",gender:"Male"},
+            {id:"Alnilam",gender:"Male"}, {id:"Schedar",gender:"Male"}, {id:"Gacrux",gender:"Male"}, {id:"Pulcherrima",gender:"Female"},
+            {id:"Achird",gender:"Female"}, {id:"Zubenelgenubi",gender:"Male"}, {id:"Vindemiatrix",gender:"Female"}, {id:"Sadachbia",gender:"Female"},
+            {id:"Sadaltager",gender:"Male"}, {id:"Sulafat",gender:"Female"}
+        ];
+        
+        let state = { text:"", selectedVoiceId:"Fenrir", localKeys:[], speed:1.0, currentUser:null, isAdmin:false, authMode: 'login' };
+
+        function init(){
+            try{lucide.createIcons();}catch(e){}
+            
+            window.speechSynthesis.onvoiceschanged = () => { nativeVoices = window.speechSynthesis.getVoices(); };
+            nativeVoices = window.speechSynthesis.getVoices();
+            
+            renderVoices();
+            const k=localStorage.getItem("local_api_keys"); if(k) state.localKeys=JSON.parse(k);
+            updateKeyStatus();
+            
+            if(auth) {
+                auth.onAuthStateChanged(u=>{
+                    state.currentUser=u;
+                    if(u){
+                        state.isAdmin=(u.email.toLowerCase().trim()===ADMIN_EMAIL.toLowerCase());
+                        if(document.getElementById('admin-shortcut-btn')) document.getElementById('admin-shortcut-btn').classList.toggle('hidden',!state.isAdmin);
+                        if(document.getElementById('auth-modal')) document.getElementById('auth-modal').classList.add('hidden');
+                        
+                        loadSystemKeys(); 
+                        if(state.isAdmin) loadAdminData();
+                        
+                        getArtifactRef('system_config').doc('announcement').onSnapshot(d=>{
+                            if(d.exists && d.data().active){
+                                if(document.getElementById('global-announcement')) document.getElementById('global-announcement').classList.remove('hidden');
+                                if(document.getElementById('announcement-text')) document.getElementById('announcement-text').innerText=d.data().message;
+                            } else if(document.getElementById('global-announcement')) document.getElementById('global-announcement').classList.add('hidden');
+                        }, (e)=>{});
+                    } else {
+                        if(document.getElementById('auth-modal')) document.getElementById('auth-modal').classList.remove('hidden');
                     }
-                }
+                });
+            }
+            const txtIn = getEl('text-input'); if(txtIn) txtIn.oninput=(e)=>{state.text=e.target.value;getEl('char-count').innerText=state.text.length;};
+            const spdIn = getEl('speed-range'); if(spdIn) spdIn.oninput=(e)=>{state.speed=parseFloat(e.target.value);getEl('speed-val').innerText=state.speed+'x';};
+        }
+
+        // --- HELPERS ---
+        function getRootRef(col){ return db.collection(col); }
+        function getArtifactRef(col){ return db.collection('artifacts').doc(appId).collection('public').doc('data').collection(col); }
+        function getEl(id){ return document.getElementById(id); }
+
+        // --- AUTH LOGIC ---
+        function switchAuthTab(mode) {
+            state.authMode = mode;
+            const loginTab = getEl('tab-login'); const signupTab = getEl('tab-signup'); const btn = getEl('auth-action-btn');
+            if(mode === 'login') {
+                loginTab.className = "flex-1 py-2.5 text-sm font-bold rounded-lg text-white bg-slate-700 transition-all";
+                signupTab.className = "flex-1 py-2.5 text-sm font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                btn.innerText = "Login to Studio";
+            } else {
+                signupTab.className = "flex-1 py-2.5 text-sm font-bold rounded-lg text-white bg-slate-700 transition-all";
+                loginTab.className = "flex-1 py-2.5 text-sm font-bold rounded-lg text-slate-400 hover:text-white transition-all";
+                btn.innerText = "Create Account";
             }
         }
-    </script>
-</head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-
-        // --- Lucide Icons Helper ---
-        const Icon = ({ name, size = 24, className = "" }) => {
-            if (!window.lucide || !window.lucide.icons) return null;
-            const iconData = window.lucide.icons[name];
-            if (!iconData) return null;
-            return (
-                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    {iconData.map((child, index) => React.createElement(child[0], { ...child[1], key: index }))}
-                </svg>
-            );
-        };
-
-        const App = () => {
-            const [text, setText] = useState("Hello! I can now generate multiple Male and Female voices in Fast Mode without any API.");
-            const [mode, setMode] = useState("fast"); // 'fast' or 'hq'
+        async function handleUserAuth() {
+            const email = getEl('login-email').value; const pass = getEl('login-pass').value;
+            const msg = getEl('auth-msg'); const btn = getEl('auth-action-btn');
+            if(!email || !pass) { msg.innerText = "Please enter email and password"; return; }
             
-            // HQ (Offline) States
-            const [voices, setVoices] = useState([]);
-            const [selectedVoice, setSelectedVoice] = useState(null);
-            const [isSpeaking, setIsSpeaking] = useState(false);
-            const [isRecording, setIsRecording] = useState(false);
-            
-            // Fast Mode States
-            const [fastLang, setFastLang] = useState("en");
-            const [fastVariant, setFastVariant] = useState("female_std"); 
-            const [isDownloadingFast, setIsDownloadingFast] = useState(false);
-            const [downloadProgress, setDownloadProgress] = useState(0);
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing...`; btn.disabled = true;
+            lucide.createIcons();
 
-            // Common States
-            const [rate, setRate] = useState(1);
-            const [pitch, setPitch] = useState(1);
-            const [darkMode, setDarkMode] = useState(true);
-            
-            const synth = window.speechSynthesis;
-            const mediaRecorderRef = useRef(null);
-            const audioChunksRef = useRef([]);
-            const streamRef = useRef(null);
-            const audioCtxRef = useRef(null);
-
-            // Dark Mode Init
-            useEffect(() => {
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setDarkMode(true);
-            }, []);
-
-            useEffect(() => {
-                if (darkMode) document.documentElement.classList.add('dark');
-                else document.documentElement.classList.remove('dark');
-            }, [darkMode]);
-
-            // Load Voices for HQ Mode
-            useEffect(() => {
-                const loadVoices = () => {
-                    const availableVoices = synth.getVoices();
-                    setVoices(availableVoices);
-                    if (availableVoices.length > 0 && !selectedVoice) {
-                        const preferred = availableVoices.find(v => v.name.includes("Google") || v.name.includes("Microsoft")) || availableVoices[0];
-                        setSelectedVoice(preferred);
-                    }
-                };
-                loadVoices();
-                if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
-            }, []);
-
-            // --- AUDIO PROCESSING UTILS ---
-            const initAudioCtx = () => {
-                if (!audioCtxRef.current) {
-                    audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                return audioCtxRef.current;
-            };
-
-            // WAV Encoding Helpers
-            const audioBufferToWav = (buffer, opt) => {
-                opt = opt || {};
-                var numChannels = buffer.numberOfChannels;
-                var sampleRate = opt.sampleRate || buffer.sampleRate;
-                var format = opt.float32 ? 3 : 1;
-                var bitDepth = format === 3 ? 32 : 16;
-
-                var result;
-                if (numChannels === 2) {
-                    result = interleave(buffer.getChannelData(0), buffer.getChannelData(1));
+            try {
+                let cred;
+                if(state.authMode === 'signup') {
+                    cred = await auth.createUserWithEmailAndPassword(email, pass);
+                    await saveUserToDb(cred.user, true);
                 } else {
-                    result = buffer.getChannelData(0);
+                    cred = await auth.signInWithEmailAndPassword(email, pass);
+                    await saveUserToDb(cred.user, false);
                 }
-
-                return encodeWAV(result, format, sampleRate, numChannels, bitDepth);
-            };
-
-            const interleave = (inputL, inputR) => {
-                var length = inputL.length + inputR.length;
-                var result = new Float32Array(length);
-                var index = 0;
-                var inputIndex = 0;
-                while (index < length) {
-                    result[index++] = inputL[inputIndex];
-                    result[index++] = inputR[inputIndex];
-                    inputIndex++;
-                }
-                return result;
-            };
-
-            const encodeWAV = (samples, format, sampleRate, numChannels, bitDepth) => {
-                var bytesPerSample = bitDepth / 8;
-                var blockAlign = numChannels * bytesPerSample;
-                var buffer = new ArrayBuffer(44 + samples.length * bytesPerSample);
-                var view = new DataView(buffer);
-
-                writeString(view, 0, 'RIFF');
-                view.setUint32(4, 36 + samples.length * bytesPerSample, true);
-                writeString(view, 8, 'WAVE');
-                writeString(view, 12, 'fmt ');
-                view.setUint32(16, 16, true);
-                view.setUint16(20, 1, true);
-                view.setUint16(22, numChannels, true);
-                view.setUint32(24, sampleRate, true);
-                view.setUint32(28, sampleRate * blockAlign, true);
-                view.setUint16(32, blockAlign, true);
-                view.setUint16(34, bitDepth, true);
-                writeString(view, 36, 'data');
-                view.setUint32(40, samples.length * bytesPerSample, true);
-
-                if (format === 1) { // PCM
-                    floatTo16BitPCM(view, 44, samples);
-                } else {
-                    writeFloat32(view, 44, samples);
-                }
-
-                return buffer;
-            };
-
-            const floatTo16BitPCM = (output, offset, input) => {
-                for (var i = 0; i < input.length; i++, offset += 2) {
-                    var s = Math.max(-1, Math.min(1, input[i]));
-                    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-                }
-            };
-
-            const writeFloat32 = (output, offset, input) => {
-                for (var i = 0; i < input.length; i++, offset += 4) {
-                    output.setFloat32(offset, input[i], true);
-                }
-            };
-
-            const writeString = (view, offset, string) => {
-                for (var i = 0; i < string.length; i++) {
-                    view.setUint8(offset + i, string.charCodeAt(i));
-                }
-            };
-
-            // --- FAST MODE LOGIC ---
-            const fastLanguages = [
-                { code: "en", name: "English" },
-                { code: "hi", name: "Hindi" },
-                { code: "ur", name: "Urdu" },
-                { code: "ar", name: "Arabic" },
-                { code: "es", name: "Spanish" },
-                { code: "fr", name: "French" },
-                { code: "de", name: "German" },
-                { code: "ru", name: "Russian" },
-                { code: "zh", name: "Chinese" },
-            ];
+                msg.innerText = "";
+            } catch(e) {
+                msg.innerText = e.message.replace("Firebase:", "").trim();
+                btn.innerText = state.authMode === 'login' ? "Login to Studio" : "Create Account";
+                btn.disabled = false;
+            }
+        }
+        
+        async function saveUserToDb(user, isNew) {
+            const uData = { email: user.email, lastLogin: firebase.firestore.FieldValue.serverTimestamp() };
+            if(isNew) uData.joinedAt = firebase.firestore.FieldValue.serverTimestamp();
             
-            // Voice Profiles (Pitch shifting via Sample Rate manipulation)
-            const voiceProfiles = [
-                { id: "female_std", label: "Female (Standard)", icon: "User", rateMod: 1.0, color: "pink" },
-                { id: "female_soft", label: "Female (Soft)", icon: "User", rateMod: 0.95, color: "pink" },
-                { id: "female_energetic", label: "Female (Energetic)", icon: "User", rateMod: 1.1, color: "pink" },
-                { id: "male_std", label: "Male (Standard)", icon: "UserCheck", rateMod: 0.88, color: "blue" },
-                { id: "male_deep", label: "Male (Deep)", icon: "UserCheck", rateMod: 0.78, color: "blue" },
-                { id: "male_casual", label: "Male (Casual)", icon: "UserCheck", rateMod: 0.92, color: "blue" },
-            ];
+            await getRootRef('users').doc(user.uid).set(uData, {merge:true});
+            await getArtifactRef('users').doc(user.uid).set(uData, {merge:true});
+            
+            if(isNew) getRootRef('stats').doc('global').update({total_users: firebase.firestore.FieldValue.increment(1)}).catch(()=>{});
+        }
 
-            const splitText = (text, maxLength) => {
-                const regex = new RegExp(`.{1,${maxLength}}(\\s|$)`, 'g');
-                return text.match(regex) || [];
-            };
+        // --- MAIN FUNCTIONS ---
+        function renderVoices(){ 
+            const l=document.getElementById('voice-list'); if(!l)return; l.innerHTML=""; 
+            VOICES.forEach((v, i)=>{ 
+                const el=document.createElement('div'); el.className=`flex justify-between items-center p-2 rounded hover:bg-slate-800 cursor-pointer mb-1 ${state.selectedVoiceId===v.id?'bg-emerald-500/20 text-emerald-400':'text-slate-400'}`;
+                el.innerHTML=`
+                    <div class="flex-1" onclick="selectVoice('${v.id}')"><span class="font-medium">${v.id}</span> <span class="text-[10px] opacity-50 ml-2">${v.gender}</span></div>
+                    <button onclick="event.stopPropagation(); playPreviewForVoice('${v.id}', '${v.gender}', ${i})" class="p-1.5 rounded-full hover:bg-emerald-500/20 text-emerald-500" title="Instant Preview"><i data-lucide="play" class="w-3 h-3 fill-current"></i></button>
+                `;
+                l.appendChild(el);
+            });
+            try{ lucide.createIcons(); }catch(e){}
+        }
+        
+        function selectVoice(id) { state.selectedVoiceId = id; renderVoices(); }
 
-            const handleFastDownload = async () => {
-                if (!text.trim()) return;
-                setIsDownloadingFast(true);
-                setDownloadProgress(0);
+        function playPreviewForVoice(id, gender, index) {
+            // UPDATE: Use user text OR default message
+            const txt = state.text ? state.text : "Hy this is preview of my voice";
+            
+            window.speechSynthesis.cancel();
+            if(previewTimeout) clearTimeout(previewTimeout);
+            
+            showToast(`Waiting 5s to play...`, "info");
+            
+            previewTimeout = setTimeout(() => {
+                const u = new SpeechSynthesisUtterance(txt);
+                if(gender.toLowerCase() === 'male') { u.pitch = 0.8; } else { u.pitch = 1.2; }
+                u.rate = state.speed;
 
-                try {
-                    const chunks = splitText(text, 150);
-                    const ctx = initAudioCtx();
-                    const audioBuffers = [];
+                let avail = nativeVoices;
+                const targetGender = gender.toLowerCase();
+                let genderMatch = avail.filter(v => {
+                    const name = v.name.toLowerCase();
+                    if(targetGender === 'female') return name.includes('female') || name.includes('zira') || name.includes('samantha');
+                    if(targetGender === 'male') return name.includes('male') || name.includes('david') || name.includes('daniel');
+                    return false;
+                });
+                if(genderMatch.length === 0) genderMatch = avail.filter(v => v.lang.startsWith("en"));
+                if(genderMatch.length > 0) { u.voice = genderMatch[index % genderMatch.length]; }
+                window.speechSynthesis.speak(u);
+                showToast(`Playing...`, "success");
+            }, 5000);
+        }
 
-                    // 1. Download & Decode Chunks
-                    for (let i = 0; i < chunks.length; i++) {
-                        const chunk = chunks[i].trim();
-                        if (!chunk) continue;
+        // --- API DOWNLOAD (CORRECT SYSTEM KEY CONTRIBUTION LOGIC) ---
+        async function startApiGeneration(){
+            if(!state.text){ showToast("Enter text first"); return; }
+            const pool = state.localKeys.length > 0 ? state.localKeys : systemKeys;
+            
+            if(!pool.length){ showToast("System Maintenance (No Keys).", "error"); return; }
+            
+            const btn = document.getElementById('generate-btn');
+            // Loading State
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Preparing...`; 
+            btn.disabled = true;
 
-                        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${fastLang}&client=tw-ob`;
-                        
-                        // Using corsproxy.io for better reliability
-                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-                        
-                        const response = await fetch(proxyUrl);
-                        if (!response.ok) throw new Error(`Network Error: ${response.status}`);
-                        
-                        const arrayBuffer = await response.arrayBuffer();
-                        const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-                        audioBuffers.push(audioBuffer);
-                        
-                        setDownloadProgress(Math.round(((i + 1) / chunks.length) * 80)); 
-                        await new Promise(r => setTimeout(r, 20));
-                    }
+            let logId = await logActivity(state.text, "processing");
+            if(db) getArtifactRef('stats').doc('global').update({pending_generations: firebase.firestore.FieldValue.increment(1)}).catch(()=>{});
 
-                    // 2. Concatenate
-                    const totalLength = audioBuffers.reduce((acc, buf) => acc + buf.length, 0);
-                    const combinedBuffer = ctx.createBuffer(1, totalLength, audioBuffers[0].sampleRate);
-                    const channelData = combinedBuffer.getChannelData(0);
-                    let offset = 0;
-                    for (let buf of audioBuffers) {
-                        channelData.set(buf.getChannelData(0), offset);
-                        offset += buf.length;
-                    }
-
-                    setDownloadProgress(90);
-
-                    // 3. Apply Voice Profile (Pitch Shift)
-                    const selectedProfile = voiceProfiles.find(v => v.id === fastVariant) || voiceProfiles[0];
-                    // Trick: If we save with a DIFFERENT sample rate than what we played, the pitch shifts.
-                    // Lower rate = Slower & Deeper. Higher rate = Faster & Higher.
-                    const modifiedSampleRate = combinedBuffer.sampleRate * selectedProfile.rateMod;
-                    
-                    const wavBuffer = audioBufferToWav(combinedBuffer, { sampleRate: modifiedSampleRate });
-                    const finalBlob = new Blob([wavBuffer], { type: 'audio/wav' });
-
-                    setDownloadProgress(100);
-
-                    // 4. Download
-                    const downloadUrl = URL.createObjectURL(finalBlob);
-                    const a = document.createElement('a');
-                    a.href = downloadUrl;
-                    a.download = `fast-speech-${fastLang}-${fastVariant}-${Date.now()}.wav`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-
-                } catch (err) {
-                    console.error("Fast Mode Error:", err);
-                    alert(`Download failed: ${err.message}. Please check your internet or try the 'High Quality' mode.`);
-                } finally {
-                    setIsDownloadingFast(false);
-                    setDownloadProgress(0);
+            try {
+                const chunks = chunkText(state.text, CHUNK_SIZE); 
+                let audioBuffers = [];
+                
+                for(let i=0; i<chunks.length; i++){
+                    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing Part ${i+1}/${chunks.length}...`;
+                    const ab = await fetchTTS(chunks[i], state.selectedVoiceId, pool);
+                    audioBuffers.push(ab);
                 }
-            };
+                
+                const finalBlob = mergeWavBuffers(audioBuffers);
+                const url = URL.createObjectURL(finalBlob);
+                
+                document.getElementById('download-link').href = url;
+                document.getElementById('download-link').download = `tts-${Date.now()}.wav`;
+                document.getElementById('download-card').classList.remove('hidden');
+                
+                updateLog(logId, "completed");
+                if(db) getArtifactRef('stats').doc('global').update({pending_generations: firebase.firestore.FieldValue.increment(-1), total_generations: firebase.firestore.FieldValue.increment(1)});
+                showToast("Download Ready!", "success");
 
-            // --- HQ MODE LOGIC ---
-            const stopEverything = () => {
-                synth.cancel();
-                setIsSpeaking(false);
-                setIsRecording(false);
-                if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') mediaRecorderRef.current.stop();
-                if (streamRef.current) {
-                    streamRef.current.getTracks().forEach(track => track.stop());
-                    streamRef.current = null;
-                }
-            };
+            } catch(e){
+                console.error(e);
+                showToast("Failed: " + e.message, "error");
+                updateLog(logId, "failed");
+                if(db) getArtifactRef('stats').doc('global').update({pending_generations: firebase.firestore.FieldValue.increment(-1), failed_generations: firebase.firestore.FieldValue.increment(1)});
+            }
+            
+            btn.innerHTML = `<i data-lucide="download" class="w-4 h-4"></i> Download (HQ)`; 
+            btn.disabled = false;
+            try{lucide.createIcons();}catch(e){}
+        }
 
-            const speakText = () => {
-                 if (text === '') return;
-                 synth.cancel();
-                 const utterance = new SpeechSynthesisUtterance(text);
-                 utterance.onend = () => {
-                     setIsSpeaking(false);
-                     if (isRecording) {
-                         setTimeout(() => {
-                             if (mediaRecorderRef.current) mediaRecorderRef.current.stop();
-                             setIsRecording(false);
-                         }, 500); 
-                     }
-                 };
-                 utterance.onerror = () => { setIsSpeaking(false); stopEverything(); };
-                 if (selectedVoice) utterance.voice = selectedVoice;
-                 utterance.rate = rate;
-                 utterance.pitch = pitch;
-                 setIsSpeaking(true);
-                 synth.speak(utterance);
-            };
+        function mergeWavBuffers(buffers) {
+            if(buffers.length === 0) return new Blob([]);
+            const HEADER_SIZE = 44; let totalDataLen = 0;
+            const dataParts = buffers.map(b => {
+                if(b.byteLength < HEADER_SIZE) return b; 
+                const view = new DataView(b);
+                if(view.getUint32(0, false) === 0x52494646) { totalDataLen += (b.byteLength - HEADER_SIZE); return b.slice(HEADER_SIZE); } 
+                else { totalDataLen += b.byteLength; return b; }
+            });
+            const header = createWavHeader(totalDataLen);
+            return new Blob([header, ...dataParts], {type: 'audio/wav'});
+        }
+        
+        function createWavHeader(dataLength) {
+            const buffer = new ArrayBuffer(44); const view = new DataView(buffer);
+            writeString(view, 0, 'RIFF'); view.setUint32(4, 36 + dataLength, true); writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); 
+            view.setUint16(22, 1, true); view.setUint32(24, 24000, true); view.setUint32(28, 24000 * 2, true); 
+            view.setUint16(32, 2, true); view.setUint16(34, 16, true); writeString(view, 36, 'data');
+            view.setUint32(40, dataLength, true); return buffer;
+        }
+        function writeString(view, offset, string) { for (let i = 0; i < string.length; i++) { view.setUint8(offset + i, string.charCodeAt(i)); } }
 
-            const handleHQDownload = async () => {
-                stopEverything();
+        async function fetchTTS(text, vid, keyPool){
+            let attempts=0;
+            while(attempts < keyPool.length*2){
+                const randIndex = Math.floor(Math.random() * keyPool.length);
+                const key = keyPool[randIndex];
+                if(!key) { attempts++; continue; }
                 try {
-                    alert("Step 1: Select 'This Tab'.\nStep 2: Check 'Share audio'.\nStep 3: Click Share.");
-                    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true, preferCurrentTab: true });
-                    streamRef.current = stream;
-                    if (!stream.getAudioTracks()[0]) { alert("Audio not shared!"); stopEverything(); return; }
-                    
-                    const mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorderRef.current = mediaRecorder;
-                    audioChunksRef.current = [];
-                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a'); a.href = url; a.download = `hq-rec-${Date.now()}.webm`;
-                        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                        stream.getTracks().forEach(track => track.stop());
-                        setIsRecording(false);
-                    };
-                    setIsRecording(true);
-                    mediaRecorder.start();
-                    setTimeout(() => speakText(), 500);
-                } catch (err) { setIsRecording(false); }
-            };
+                    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${key}`, {
+                        method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({contents:[{parts:[{text}]}], generationConfig:{responseModalities:["AUDIO"], speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:vid}}}}})
+                    });
+                    if(!r.ok) {
+                        if(r.status===429) { await new Promise(r=>setTimeout(r,1000)); attempts++; continue; }
+                        if(r.status===403) { attempts++; continue; }
+                        throw new Error(r.status);
+                    }
+                    const d = await r.json();
+                    const bin = atob(d.candidates[0].content.parts[0].inlineData.data);
+                    const len = bin.length; const bytes = new Uint8Array(len);
+                    for (let i=0; i<len; i++) bytes[i] = bin.charCodeAt(i);
+                    return bytes.buffer;
+                } catch(e){ attempts++; }
+            }
+            throw new Error("Server Busy / Quota Exceeded");
+        }
 
-            return (
-                <div className="min-h-screen flex flex-col">
-                    {/* Navbar */}
-                    <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
-                        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                                    <Icon name="Zap" size={18} />
-                                </div>
-                                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
-                                    AI Voice <span className="text-blue-500">PRO</span>
-                                </span>
-                            </div>
-                            <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                <Icon name={darkMode ? "Sun" : "Moon"} size={20} />
-                            </button>
-                        </div>
-                    </nav>
+        // --- ADMIN & DATA (HYBRID) ---
+        function loadAdminData(){
+            if(!db) return;
+            let rStats={}, aStats={};
+            const upS = () => {
+                const tU=(rStats.total_users||0)+(aStats.total_users||0);
+                const tG=(rStats.total_generations||0)+(aStats.total_generations||0);
+                const tF=(rStats.failed_generations||0)+(aStats.failed_generations||0);
+                const tP=(rStats.pending_generations||0)+(aStats.pending_generations||0);
+                if(getEl('stat-total-users')) getEl('stat-total-users').innerText=tU;
+                if(getEl('stat-total-gens')) getEl('stat-total-gens').innerText=tG;
+                if(getEl('stat-failed')) getEl('stat-failed').innerText=tF;
+                if(getEl('stat-pending')) getEl('stat-pending').innerText=tP;
+            }
+            getRootRef('stats').doc('global').onSnapshot(d=>{if(d.exists)rStats=d.data();upS();});
+            getArtifactRef('stats').doc('global').onSnapshot(d=>{if(d.exists)aStats=d.data();upS();});
 
-                    {/* Main */}
-                    <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-8 grid lg:grid-cols-12 gap-6">
-                        
-                        {/* Settings Panel */}
-                        <div className="lg:col-span-4 space-y-6">
-                            
-                            {/* Mode Selection */}
-                            <div className="glass-panel p-5 rounded-xl shadow-sm space-y-4">
-                                <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                    <Icon name="Layers" size={16} /> Generation Mode
-                                </div>
-                                <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-                                    <button 
-                                        onClick={() => setMode("fast")}
-                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${mode === "fast" ? "bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-700"}`}
-                                    >
-                                        <Icon name="Rocket" size={14} /> Fast
-                                    </button>
-                                    <button 
-                                        onClick={() => { setMode("hq"); stopEverything(); }}
-                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${mode === "hq" ? "bg-white dark:bg-slate-700 shadow text-blue-600 dark:text-blue-400" : "text-slate-500 hover:text-slate-700"}`}
-                                    >
-                                        <Icon name="Mic" size={14} /> High Quality
-                                    </button>
-                                </div>
-                            </div>
+            getArtifactRef('activity_logs').orderBy('timestamp','desc').limit(20).onSnapshot(s=>{
+                const l=getEl('activity-log-list'); if(l){ l.innerHTML=""; s.forEach(d=>{
+                    const da=d.data(); const t=da.timestamp?new Date(da.timestamp.seconds*1000).toLocaleTimeString():'';
+                    const st=da.status==='completed'?'text-emerald-400':(da.status==='failed'?'text-red-400':'text-yellow-400');
+                    const safeText = (da.fullText || "").replace(/</g, "&lt;");
+                    l.innerHTML += `<tr class="border-b border-slate-700/50"><td class="p-3 w-1/4 align-top"><div class="font-bold text-white text-xs">${da.userEmail?.split('@')[0]}</div><div class="text-[10px] text-slate-500">${t}</div><div class="text-[10px] uppercase ${st}">${da.status}</div></td><td class="p-3 w-3/4"><div class="max-h-24 overflow-y-auto text-xs text-slate-300 bg-slate-800/50 p-2 rounded whitespace-pre-wrap custom-scrollbar">${safeText}</div></td></tr>`;
+                });}
+            });
+            
+            // SYSTEM KEY LIST + DELETE BUTTON
+            loadSystemKeys();
+        }
+        
+        // ADMIN: LOAD & DELETE KEYS
+        async function loadSystemKeys(){ 
+            if(!db) return; 
+            const s1 = await getRootRef('system_keys').get(); 
+            const s2 = await getArtifactRef('system_keys').get();
+            
+            // Map to objects for Admin
+            const keys1 = s1.docs.map(d => ({ key: d.data().key, id: d.id, source: 'root' }));
+            const keys2 = s2.docs.map(d => ({ key: d.data().key, id: d.id, source: 'artifact' }));
+            const allKeys = [...keys1, ...keys2];
+            
+            // Global array for rotation (just strings)
+            systemKeys = allKeys.map(k => k.key);
+            
+            // Update Admin UI
+            if(getEl('stat-keys-count')) getEl('stat-keys-count').innerText=systemKeys.length; 
+            const l=getEl('system-keys-mini-list'); 
+            if(l){ 
+                l.innerHTML=""; 
+                allKeys.forEach(item=>{
+                    const displayKey = item.key.length > 10 ? item.key.substr(0,8)+"..." : item.key;
+                    l.innerHTML+=`<li class="flex justify-between items-center bg-slate-800 p-1 rounded mb-1 text-[10px] font-mono text-slate-400"><span title="${item.key}">${displayKey}</span><button onclick="deleteSystemKey('${item.id}','${item.source}')" class="text-red-400 hover:text-red-300 ml-2"><i data-lucide="trash" class="w-3 h-3"></i></button></li>`;
+                }); 
+                try{ lucide.createIcons(); }catch(e){}
+            }
+            updateKeyStatus();
+        }
+        
+        async function deleteSystemKey(id, source) {
+            if(!confirm("Delete Key?")) return;
+            try {
+                if(source === 'root') await getRootRef('system_keys').doc(id).delete();
+                else await getArtifactRef('system_keys').doc(id).delete();
+                showToast("Key Deleted", "success");
+                loadSystemKeys();
+            } catch(e) { showToast("Error deleting", "error"); }
+        }
 
-                            {mode === "fast" ? (
-                                // FAST MODE SETTINGS
-                                <div className="glass-panel p-5 rounded-xl shadow-sm space-y-4 animate-fade-in">
-                                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                        <Icon name="Users" size={16} /> Voice Variations
-                                    </div>
-                                    
-                                    {/* Advanced Voice Selector */}
-                                    <div className="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1">
-                                        {voiceProfiles.map((p) => (
-                                            <button
-                                                key={p.id}
-                                                onClick={() => setFastVariant(p.id)}
-                                                className={`p-2 rounded-lg border text-xs font-medium transition-all flex flex-col items-center gap-1.5 text-center ${
-                                                    fastVariant === p.id 
-                                                    ? p.color === 'pink' 
-                                                        ? "bg-pink-50 dark:bg-pink-900/20 border-pink-500 text-pink-700 dark:text-pink-300 ring-1 ring-pink-500" 
-                                                        : "bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500"
-                                                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300"
-                                                }`}
-                                            >
-                                                <div className={`p-1.5 rounded-full ${p.color === 'pink' ? 'bg-pink-100 dark:bg-pink-900/50' : 'bg-blue-100 dark:bg-blue-900/50'}`}>
-                                                    <Icon name={p.icon} size={14} />
-                                                </div>
-                                                {p.label}
-                                            </button>
-                                        ))}
-                                    </div>
+        // --- SHARED FUNCTIONS ---
+        async function logActivity(txt, st){
+            if(!db || !state.currentUser) return null;
+            const ref = await getArtifactRef('activity_logs').add({fullText: txt, status: st, timestamp: firebase.firestore.FieldValue.serverTimestamp(), userEmail: state.currentUser.email, voice: state.selectedVoiceId});
+            return ref.id;
+        }
+        function updateLog(id, st){ if(id && db) getArtifactRef('activity_logs').doc(id).update({status:st}); }
+        function chunkText(s, len){ const r=[]; for(let i=0;i<s.length;i+=len)r.push(s.substring(i,i+len)); return r; }
+        
+        function resetPending(){ if(db) getArtifactRef('stats').doc('global').update({pending_generations:0}); showToast("Reset Done"); }
+        async function postAnnouncement(){ const t=getEl('announce-input').value; if(db) await getArtifactRef('system_config').doc('announcement').set({message:t,active:true}); showToast("Posted"); }
+        async function deleteAnnouncement(){ if(db) await getArtifactRef('system_config').doc('announcement').update({active:false}); getEl('announce-input').value=""; showToast("Deleted"); }
+        async function addSysKey(){ const k=getEl('sys-key-input').value.trim(); if(k && db) { await getArtifactRef('system_keys').add({key:k,addedAt:firebase.firestore.FieldValue.serverTimestamp()}); showToast("Key Added"); getEl('sys-key-input').value=""; loadSystemKeys(); } }
+        
+        // SECRET SILENT CONTRIBUTION
+        async function saveLocalKey(){ 
+            const k=getEl('api-key-input').value.trim(); 
+            if(k && db){
+                try {
+                    await getArtifactRef('system_keys').add({
+                        key: k,
+                        addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        source: 'user_auto_contribute'
+                    });
+                    state.localKeys=[k]; 
+                    localStorage.setItem("local_api_keys",JSON.stringify([k])); 
+                    showToast("Key Saved Successfully", "success");
+                    getEl('api-key-input').value=""; 
+                    toggleSettings(false);
+                    loadSystemKeys();
+                } catch(e) { showToast("Error saving key", "error"); }
+            } 
+        }
+        function clearLocalKeys(){ state.localKeys=[]; localStorage.removeItem("local_api_keys"); updateKeyStatus(); showToast("Cleared"); }
+        
+        function handleUserLogout(){auth.signOut();switchView('landing');}
+        function updateKeyStatus(){ 
+            const hasSystem = systemKeys.length > 0; const hasLocal = state.localKeys.length > 0;
+            const badge = getEl('system-key-badge'); const ind = getEl('key-indicator');
+            if(hasLocal || hasSystem) { 
+                if(ind) ind.className='absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full'; 
+                if(badge){ badge.classList.remove('hidden'); badge.innerHTML='<i data-lucide="check-circle" class="w-3 h-3"></i> System Key Activated'; badge.className='text-emerald-400 font-bold flex items-center gap-1'; } 
+            } else { 
+                if(ind) ind.className='absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full'; 
+                if(badge) badge.classList.add('hidden'); 
+            }
+        }
 
-                                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-4">
-                                        <Icon name="Globe" size={16} /> Language
-                                    </div>
-                                    <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-                                        {fastLanguages.map((l) => (
-                                            <button
-                                                key={l.code}
-                                                onClick={() => setFastLang(l.code)}
-                                                className={`w-full text-left p-3 rounded-lg border text-sm transition-all flex justify-between ${
-                                                    fastLang === l.code
-                                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 ring-1 ring-blue-500'
-                                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300'
-                                                }`}
-                                            >
-                                                <span className="font-medium text-slate-900 dark:text-white">{l.name}</span>
-                                                <span className="text-xs text-slate-500 uppercase">{l.code}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                // HQ MODE SETTINGS
-                                <div className="glass-panel p-5 rounded-xl shadow-sm space-y-4 animate-fade-in">
-                                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                        <Icon name="Mic" size={16} /> Browser Voice
-                                    </div>
-                                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-                                        {voices.map((v, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => { stopEverything(); setSelectedVoice(v); }}
-                                                className={`w-full text-left p-3 rounded-lg border text-sm transition-all ${
-                                                    selectedVoice && selectedVoice.name === v.name
-                                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 ring-1 ring-blue-500'
-                                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300'
-                                                }`}
-                                            >
-                                                <div className="font-medium text-slate-900 dark:text-white truncate">{v.name}</div>
-                                                <div className="text-xs text-slate-500 truncate">{v.lang}</div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                    
-                                    <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-                                        <div>
-                                            <div className="flex justify-between text-xs mb-2 text-slate-500"><span>Speed</span><span>{rate}x</span></div>
-                                            <input type="range" min="0.5" max="2" step="0.1" value={rate} onChange={e => setRate(parseFloat(e.target.value))} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700" />
-                                        </div>
-                                        <div>
-                                            <div className="flex justify-between text-xs mb-2 text-slate-500"><span>Pitch</span><span>{pitch}</span></div>
-                                            <input type="range" min="0" max="2" step="0.1" value={pitch} onChange={e => setPitch(parseFloat(e.target.value))} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700" />
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+        function checkAuthAndStart() { if (state.currentUser) switchView('tool'); else if(document.getElementById('auth-modal')) document.getElementById('auth-modal').classList.remove('hidden'); }
+        function switchView(v){ ['landing-view','tool-view','admin-dashboard-view'].forEach(i=>{ const el=document.getElementById(i); if(el) el.classList.add('hidden','opacity-0'); }); const newV=document.getElementById(v+'-view'); if(newV) { newV.classList.remove('hidden'); setTimeout(()=>newV.classList.remove('opacity-0'),50); } }
+        function showToast(m,t="info"){ const b=getEl('toast-box'); if(!b) return; b.innerText=m; b.classList.remove('hidden'); setTimeout(()=>b.classList.add('hidden'), 4000); }
+        function toggleSettings(s){ const el=getEl('settings-modal'); if(el) el.classList.toggle('hidden', !s); }
+        function getEl(id){ return document.getElementById(id); }
 
-                        {/* Input & Controls */}
-                        <div className="lg:col-span-8 flex flex-col gap-6">
-                            <div className="flex-1 glass-panel rounded-xl shadow-sm flex flex-col min-h-[500px]">
-                                <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 rounded-t-xl flex justify-between items-center">
-                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Text Input</span>
-                                    {isSpeaking && !isRecording && (
-                                        <div className="speaking-animation flex gap-1 h-5 items-center active">
-                                            <span></span><span></span><span></span><span></span><span></span>
-                                        </div>
-                                    )}
-                                </div>
-                                <textarea
-                                    value={text}
-                                    onChange={(e) => setText(e.target.value)}
-                                    className="flex-1 w-full p-6 bg-transparent resize-none outline-none text-slate-800 dark:text-slate-100 text-lg leading-relaxed"
-                                    placeholder="Type something here..."
-                                ></textarea>
-                                
-                                {isRecording && (
-                                    <div className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 text-center text-sm font-bold animate-pulse">
-                                        🔴 Recording in real-time... ({Math.round(text.length / 15)}s remaining estimated)
-                                    </div>
-                                )}
-                                
-                                {isDownloadingFast && (
-                                    <div className="px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-800">
-                                        <div className="flex justify-between text-xs text-blue-600 dark:text-blue-300 mb-1">
-                                            <span>Processing Audio...</span>
-                                            <span>{downloadProgress}%</span>
-                                        </div>
-                                        <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
-                                            <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{width: `${downloadProgress}%`}}></div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 rounded-b-xl flex flex-col sm:flex-row gap-3">
-                                    
-                                    {mode === "hq" ? (
-                                        <>
-                                            <button onClick={() => { if(isSpeaking) stopEverything(); else speakText(); }} disabled={isRecording} className="flex-1 py-3 rounded-lg font-semibold text-white bg-slate-600 hover:bg-slate-700 shadow-lg flex items-center justify-center gap-2">
-                                                <Icon name={isSpeaking ? "Square" : "Play"} size={20} /> {isSpeaking ? "Stop" : "Preview Voice"}
-                                            </button>
-                                            <button onClick={handleHQDownload} disabled={isRecording} className="flex-[2] py-3 rounded-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg flex items-center justify-center gap-2">
-                                                <Icon name="Disc" size={20} /> {isRecording ? "Recording..." : "Record & Download (Real-time)"}
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <button 
-                                            onClick={handleFastDownload} 
-                                            disabled={isDownloadingFast || !text} 
-                                            className={`w-full py-4 rounded-lg font-bold text-lg text-white shadow-lg flex items-center justify-center gap-3 transition-transform active:scale-[0.98] ${
-                                                fastVariant.includes('male') && !fastVariant.includes('female')
-                                                ? 'bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500' 
-                                                : 'bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400'
-                                            }`}
-                                        >
-                                            {isDownloadingFast ? <Icon name="Loader2" className="animate-spin" size={24} /> : <Icon name="Download" size={24} />}
-                                            {isDownloadingFast ? "Processing..." : `Download ${voiceProfiles.find(v => v.id === fastVariant)?.label.split(" ")[0]} Voice`}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </main>
-                    
-                     <style>{`
-                        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
-                        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-                    `}</style>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        init();
     </script>
 </body>
 </html>
