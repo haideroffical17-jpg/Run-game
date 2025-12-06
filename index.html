@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Creator Studio - Hybrid Edition</title>
+    <title>AI Creator Studio - V6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- FIREBASE SDKs -->
@@ -44,12 +44,12 @@
         <div id="landing-view" class="absolute inset-0 flex flex-col items-center justify-center p-6 z-10 transition-opacity duration-500">
             <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-900/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="bg-[#1E293B] border border-slate-700/50 px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest text-indigo-300 uppercase mb-6 shadow-lg">Powered by Grow with Haider</div>
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-10 text-center">AI Creator Studio<br/><span class="text-emerald-400 text-2xl font-medium">Hybrid V5</span></h1>
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-10 text-center">AI Creator Studio<br/><span class="text-emerald-400 text-2xl font-medium">Hybrid V6</span></h1>
             
             <button onclick="showJoinModal()" class="group relative bg-[#162032] border border-slate-800 rounded-3xl p-10 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl cursor-pointer transform hover:-translate-y-1 max-w-md w-full flex flex-col items-center">
                 <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg mb-6"><i data-lucide="mic" class="w-10 h-10 text-white"></i></div>
                 <h3 class="text-2xl font-bold text-white mb-2">Start Generating</h3>
-                <p class="text-slate-400 text-sm mb-6">Live Polls • History • Auto-API</p>
+                <p class="text-slate-400 text-sm mb-6">Custom Polls • History • Auto-API</p>
                 <span class="flex items-center gap-2 px-6 py-2 bg-emerald-500/10 text-emerald-400 rounded-full text-sm font-bold group-hover:bg-emerald-500 group-hover:text-white transition-all">Open Studio <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
             </button>
         </div>
@@ -101,12 +101,12 @@
                             <div class="flex justify-between items-start mb-3"><h3 class="font-bold text-white flex items-center gap-2"><i data-lucide="vote" class="w-4 h-4 text-indigo-400"></i> Live Poll</h3><span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded animate-pulse">LIVE</span></div>
                             <p id="poll-question" class="text-lg font-medium text-slate-200 mb-4">Question goes here?</p>
                             <div id="poll-voting-area" class="flex gap-3">
-                                <button onclick="votePoll('yes')" class="flex-1 py-2 bg-emerald-600/20 border border-emerald-500/50 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all">Yes</button>
-                                <button onclick="votePoll('no')" class="flex-1 py-2 bg-red-600/20 border border-red-500/50 hover:bg-red-600 text-white rounded-xl font-bold transition-all">No</button>
+                                <button id="btn-vote-1" onclick="votePoll('1')" class="flex-1 py-2 bg-emerald-600/20 border border-emerald-500/50 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all">Option 1</button>
+                                <button id="btn-vote-2" onclick="votePoll('2')" class="flex-1 py-2 bg-red-600/20 border border-red-500/50 hover:bg-red-600 text-white rounded-xl font-bold transition-all">Option 2</button>
                             </div>
                             <div id="poll-results-area" class="hidden space-y-3">
-                                <div><div class="flex justify-between text-xs mb-1"><span class="font-bold text-emerald-400">Yes</span><span id="poll-yes-pct">0%</span></div><div class="w-full bg-slate-700 rounded-full h-2"><div id="poll-yes-bar" class="bg-emerald-500 h-2 rounded-full w-0 transition-all duration-500"></div></div></div>
-                                <div><div class="flex justify-between text-xs mb-1"><span class="font-bold text-red-400">No</span><span id="poll-no-pct">0%</span></div><div class="w-full bg-slate-700 rounded-full h-2"><div id="poll-no-bar" class="bg-red-500 h-2 rounded-full w-0 transition-all duration-500"></div></div></div>
+                                <div><div class="flex justify-between text-xs mb-1"><span id="lbl-res-1" class="font-bold text-emerald-400">Op1</span><span id="poll-1-pct">0%</span></div><div class="w-full bg-slate-700 rounded-full h-2"><div id="poll-1-bar" class="bg-emerald-500 h-2 rounded-full w-0 transition-all duration-500"></div></div></div>
+                                <div><div class="flex justify-between text-xs mb-1"><span id="lbl-res-2" class="font-bold text-red-400">Op2</span><span id="poll-2-pct">0%</span></div><div class="w-full bg-slate-700 rounded-full h-2"><div id="poll-2-bar" class="bg-red-500 h-2 rounded-full w-0 transition-all duration-500"></div></div></div>
                                 <p class="text-center text-[10px] text-slate-500 mt-2">Thanks for voting!</p>
                             </div>
                         </div>
@@ -226,10 +226,14 @@
                             <div class="mt-3 pt-3 border-t border-slate-700 max-h-48 overflow-y-auto custom-scrollbar"><ul id="system-keys-mini-list" class="text-[10px] space-y-1"></ul></div>
                         </div>
 
-                        <!-- POLL CREATOR -->
+                        <!-- POLL CREATOR UPDATED FOR CUSTOM OPTIONS -->
                         <div class="bg-[#1E293B] border border-slate-700 rounded-2xl p-6">
-                            <h3 class="text-sm font-bold text-white mb-4">Create Live Poll</h3>
-                            <textarea id="poll-input" class="w-full bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white mb-2 h-16" placeholder="Ask a Yes/No Question..."></textarea>
+                            <h3 class="text-sm font-bold text-white mb-4">Create Custom Poll</h3>
+                            <textarea id="poll-input" class="w-full bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white mb-2 h-16" placeholder="Ask a Question..."></textarea>
+                            <div class="flex gap-2 mb-2">
+                                <input id="poll-opt1" class="w-1/2 bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white" placeholder="Option 1 (e.g. Yes)">
+                                <input id="poll-opt2" class="w-1/2 bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white" placeholder="Option 2 (e.g. No)">
+                            </div>
                             <div class="flex gap-2 mb-3">
                                 <button onclick="postPoll()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-1.5 rounded text-xs font-bold">Start Voting</button>
                                 <button onclick="endPoll()" class="flex-1 bg-red-900/20 hover:bg-red-900/40 text-red-400 py-1.5 rounded text-xs font-bold">End Poll</button>
@@ -319,20 +323,27 @@
                             } else if(document.getElementById('global-announcement')) document.getElementById('global-announcement').classList.add('hidden');
                         }, (e)=>{});
 
-                        // POLL LISTENER (USER SIDE)
+                        // POLL LISTENER (USER SIDE UPDATED FOR CUSTOM OPTS)
                         getArtifactRef('system_config').doc('poll').onSnapshot(d => {
                             const p = d.data();
                             const card = getEl('live-poll-card');
                             if(p && p.active) {
                                 card.classList.remove('hidden');
                                 getEl('poll-question').innerText = p.question;
+                                
+                                // UPDATE BUTTON LABELS
+                                getEl('btn-vote-1').innerText = p.option1 || "Yes";
+                                getEl('btn-vote-2').innerText = p.option2 || "No";
+                                getEl('lbl-res-1').innerText = p.option1 || "Yes";
+                                getEl('lbl-res-2').innerText = p.option2 || "No";
+
                                 const hasVoted = localStorage.getItem(`voted_${d.id}_${p.timestamp?.seconds}`);
                                 if(hasVoted) {
                                     getEl('poll-voting-area').classList.add('hidden');
                                     getEl('poll-results-area').classList.remove('hidden');
-                                    const total = (p.yes || 0) + (p.no || 0);
-                                    const yesPct = total === 0 ? 0 : Math.round((p.yes / total) * 100);
-                                    const noPct = total === 0 ? 0 : Math.round((p.no / total) * 100);
+                                    const total = (p.count1 || 0) + (p.count2 || 0);
+                                    const yesPct = total === 0 ? 0 : Math.round((p.count1 / total) * 100);
+                                    const noPct = total === 0 ? 0 : Math.round((p.count2 / total) * 100);
                                     getEl('poll-yes-pct').innerText = yesPct + '%';
                                     getEl('poll-no-pct').innerText = noPct + '%';
                                     getEl('poll-yes-bar').style.width = yesPct + '%';
@@ -364,19 +375,29 @@
         function closeJoinModal() { getEl('whatsapp-modal').classList.add('hidden'); checkAuthAndStart(); }
         function enableContinue() {}
 
+        // --- NEW CUSTOM POLL FUNCTIONS ---
         async function postPoll() {
             const q = getEl('poll-input').value;
+            const o1 = getEl('poll-opt1').value || "Yes";
+            const o2 = getEl('poll-opt2').value || "No";
             if(!q) return showToast("Enter a question");
-            await getArtifactRef('system_config').doc('poll').set({ question: q, active: true, yes: 0, no: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            await getArtifactRef('system_config').doc('poll').set({ 
+                question: q, 
+                option1: o1, option2: o2,
+                active: true, 
+                count1: 0, count2: 0, // Using count1/count2 instead of yes/no
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            });
             showToast("Poll Started!");
         }
         async function endPoll() { await getArtifactRef('system_config').doc('poll').update({ active: false }); showToast("Poll Ended"); }
-        async function votePoll(option) {
+        async function votePoll(optionIdx) {
             const pollRef = getArtifactRef('system_config').doc('poll');
             const d = await pollRef.get();
             if(!d.exists || !d.data().active) return;
             const updateData = {};
-            if(option === 'yes') updateData.yes = firebase.firestore.FieldValue.increment(1); else updateData.no = firebase.firestore.FieldValue.increment(1);
+            if(optionIdx === '1') updateData.count1 = firebase.firestore.FieldValue.increment(1); 
+            else updateData.count2 = firebase.firestore.FieldValue.increment(1);
             await pollRef.update(updateData);
             localStorage.setItem(`voted_${d.id}_${d.data().timestamp?.seconds}`, 'true');
             showToast("Vote Submitted!");
@@ -531,14 +552,18 @@
                 }).join('');
             });
 
-            // NEW ADMIN POLL LISTENER
+            // NEW ADMIN POLL LISTENER FOR CUSTOM OPTIONS
             getArtifactRef('system_config').doc('poll').onSnapshot(d => {
                 const p = d.data();
                 const statsDiv = getEl('admin-poll-stats');
                 if(p) {
-                    const total = (p.yes||0)+(p.no||0);
-                    const yesPct = total ? Math.round((p.yes/total)*100) : 0;
-                    const noPct = total ? Math.round((p.no/total)*100) : 0;
+                    const total = (p.count1||0)+(p.count2||0);
+                    const yesPct = total ? Math.round((p.count1/total)*100) : 0;
+                    const noPct = total ? Math.round((p.count2/total)*100) : 0;
+                    
+                    const label1 = p.option1 || "Yes";
+                    const label2 = p.option2 || "No";
+
                     statsDiv.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-xs font-bold ${p.active?'text-emerald-400':'text-red-400'}">${p.active?'● Active':'● Ended'}</span>
@@ -546,11 +571,11 @@
                         </div>
                         <div class="space-y-2">
                             <div>
-                                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-emerald-400">Yes (${p.yes||0})</span><span>${yesPct}%</span></div>
+                                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-emerald-400">${label1} (${p.count1||0})</span><span>${yesPct}%</span></div>
                                 <div class="w-full bg-slate-800 h-1.5 rounded-full"><div style="width:${yesPct}%" class="bg-emerald-500 h-1.5 rounded-full transition-all"></div></div>
                             </div>
                             <div>
-                                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-red-400">No (${p.no||0})</span><span>${noPct}%</span></div>
+                                <div class="flex justify-between text-[10px] mb-0.5"><span class="text-red-400">${label2} (${p.count2||0})</span><span>${noPct}%</span></div>
                                 <div class="w-full bg-slate-800 h-1.5 rounded-full"><div style="width:${noPct}%" class="bg-red-500 h-1.5 rounded-full transition-all"></div></div>
                             </div>
                         </div>
