@@ -563,6 +563,7 @@
             
             clearInterval(generationTimer); getEl('progress-container').classList.add('hidden'); btn.innerHTML = `<i data-lucide="download" class="w-4 h-4"></i> Generate Audio`; btn.disabled = false; try{lucide.createIcons();}catch(e){}
         }
+        function chunkText(s, len){ const r=[]; for(let i=0;i<s.length;i+=len)r.push(s.substring(i,i+len)); return r; }
         function mergeWavBuffers(buffers) { if(buffers.length===0) return new Blob([]); let totalLen=0; const parts=buffers.map(b=>{if(b.byteLength<44)return b; const v=new DataView(b); if(v.getUint32(0)===0x52494646){totalLen+=b.byteLength-44; return b.slice(44);} totalLen+=b.byteLength; return b;}); const h=createWavHeader(totalLen); return new Blob([h,...parts],{type:'audio/wav'}); }
         function createWavHeader(len) { const b=new ArrayBuffer(44),v=new DataView(b); writeString(v,0,'RIFF'); v.setUint32(4,36+len,true); writeString(v,8,'WAVE'); writeString(v,12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,24000,true); v.setUint32(28,48000,true); v.setUint16(32,2,true); v.setUint16(34,16,true); writeString(v,36,'data'); v.setUint32(40,len,true); return b; }
         function writeString(v,o,s) { for(let i=0;i<s.length;i++) v.setUint8(o+i,s.charCodeAt(i)); }
