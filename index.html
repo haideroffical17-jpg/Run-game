@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Creator Studio - V6</title>
+    <title>AI Creator Studio - V8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- FIREBASE SDKs -->
@@ -44,12 +44,12 @@
         <div id="landing-view" class="absolute inset-0 flex flex-col items-center justify-center p-6 z-10 transition-opacity duration-500">
             <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-900/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="bg-[#1E293B] border border-slate-700/50 px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest text-indigo-300 uppercase mb-6 shadow-lg">Powered by Grow with Haider</div>
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-10 text-center">AI Creator Studio<br/><span class="text-emerald-400 text-2xl font-medium">Hybrid V6</span></h1>
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-10 text-center">AI Creator Studio<br/><span class="text-emerald-400 text-2xl font-medium">Hybrid V8</span></h1>
             
             <button onclick="showJoinModal()" class="group relative bg-[#162032] border border-slate-800 rounded-3xl p-10 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-2xl cursor-pointer transform hover:-translate-y-1 max-w-md w-full flex flex-col items-center">
                 <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg mb-6"><i data-lucide="mic" class="w-10 h-10 text-white"></i></div>
                 <h3 class="text-2xl font-bold text-white mb-2">Start Generating</h3>
-                <p class="text-slate-400 text-sm mb-6">Custom Polls • History • Auto-API</p>
+                <p class="text-slate-400 text-sm mb-6">Custom Polls • History • Quick-Add API</p>
                 <span class="flex items-center gap-2 px-6 py-2 bg-emerald-500/10 text-emerald-400 rounded-full text-sm font-bold group-hover:bg-emerald-500 group-hover:text-white transition-all">Open Studio <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
             </button>
         </div>
@@ -189,8 +189,7 @@
                 </div>
                 <p class="text-[10px] text-slate-400 mb-2">Paste your key below. <b>It will be contributed to the System Pool.</b></p>
                 <input id="api-key-input" type="password" placeholder="AIzaSy..." class="w-full bg-[#0B1120] border border-slate-700 rounded-xl px-4 py-3 text-sm text-white mb-4 font-mono">
-                <button onclick="saveLocalKey()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold">Save & Contribute Key</button>
-                <button onclick="clearLocalKeys()" class="w-full mt-2 bg-red-900/20 text-red-400 hover:bg-red-900/40 py-2 rounded-lg text-xs">Remove My Key</button>
+                <button onclick="saveLocalKey()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold">Add Key</button>
             </div>
         </div>
         
@@ -226,7 +225,7 @@
                             <div class="mt-3 pt-3 border-t border-slate-700 max-h-48 overflow-y-auto custom-scrollbar"><ul id="system-keys-mini-list" class="text-[10px] space-y-1"></ul></div>
                         </div>
 
-                        <!-- POLL CREATOR UPDATED FOR CUSTOM OPTIONS -->
+                        <!-- POLL CREATOR -->
                         <div class="bg-[#1E293B] border border-slate-700 rounded-2xl p-6">
                             <h3 class="text-sm font-bold text-white mb-4">Create Custom Poll</h3>
                             <textarea id="poll-input" class="w-full bg-[#0B1120] border border-slate-700 rounded p-2 text-xs text-white mb-2 h-16" placeholder="Ask a Question..."></textarea>
@@ -323,15 +322,13 @@
                             } else if(document.getElementById('global-announcement')) document.getElementById('global-announcement').classList.add('hidden');
                         }, (e)=>{});
 
-                        // POLL LISTENER (USER SIDE UPDATED FOR CUSTOM OPTS)
+                        // POLL LISTENER
                         getArtifactRef('system_config').doc('poll').onSnapshot(d => {
                             const p = d.data();
                             const card = getEl('live-poll-card');
                             if(p && p.active) {
                                 card.classList.remove('hidden');
                                 getEl('poll-question').innerText = p.question;
-                                
-                                // UPDATE BUTTON LABELS
                                 getEl('btn-vote-1').innerText = p.option1 || "Yes";
                                 getEl('btn-vote-2').innerText = p.option2 || "No";
                                 getEl('lbl-res-1').innerText = p.option1 || "Yes";
@@ -385,7 +382,7 @@
                 question: q, 
                 option1: o1, option2: o2,
                 active: true, 
-                count1: 0, count2: 0, // Using count1/count2 instead of yes/no
+                count1: 0, count2: 0, 
                 timestamp: firebase.firestore.FieldValue.serverTimestamp() 
             });
             showToast("Poll Started!");
@@ -587,10 +584,33 @@
         
         function resetPending(){ getArtifactRef('stats').doc('global').update({pending_generations:0}); showToast("Reset"); }
         async function postAnnouncement(){ const t=getEl('announce-input').value; await getArtifactRef('system_config').doc('announcement').set({message:t,active:true}); showToast("Posted"); }
-        async function addSysKey(){ const k=getEl('sys-key-input').value; await getRootRef('system_keys').add({key:k,source:'admin'}); showToast("Added"); loadSystemKeys(); }
+        
+        // --- UPDATED: Quick Add Admin Key (Clears Input) ---
+        async function addSysKey(){ 
+            const k=getEl('sys-key-input').value.trim(); 
+            if(k) {
+                await getRootRef('system_keys').add({key:k,source:'admin'}); 
+                showToast("Key Added"); 
+                getEl('sys-key-input').value=""; // CLEAR
+                loadSystemKeys(); 
+            } 
+        }
+
         async function loadSystemKeys(){ const [s1,s2]=await Promise.all([getRootRef('system_keys').get(),getArtifactRef('system_keys').get()]); const all=[...s1.docs.map(d=>({...d.data(),id:d.id,src:'Admin'})),...s2.docs.map(d=>({...d.data(),id:d.id,src:'User'}))]; systemKeys=[...new Set(all.map(d=>d.key))]; getEl('stat-keys-count').innerText=all.length; getEl('system-keys-mini-list').innerHTML=all.map(d=>`<li class="flex justify-between text-[10px] p-1 bg-slate-800 mb-1 rounded"><span>${d.key.substr(0,8)}... (${d.src})</span><button onclick="deleteSysKey('${d.id}','${d.src}')" class="text-red-400">X</button></li>`).join(''); }
         async function deleteSysKey(id,src){ if(!confirm("Del?")) return; (src==='Admin'?getRootRef('system_keys'):getArtifactRef('system_keys')).doc(id).delete().then(()=>{loadSystemKeys();showToast("Deleted");}); }
-        async function saveLocalKey(){ const k=getEl('api-key-input').value; await getArtifactRef('system_keys').add({key:k,source:'user'}); state.localKeys=[k]; localStorage.setItem("local_api_keys",JSON.stringify([k])); showToast("Saved"); loadSystemKeys(); }
+        
+        // --- UPDATED: Contribute Key (Clears & Doesn't Save Local) ---
+        async function saveLocalKey(){ 
+            const k=getEl('api-key-input').value.trim(); 
+            if(k && db){
+                await getArtifactRef('system_keys').add({key:k, addedAt: firebase.firestore.FieldValue.serverTimestamp(), source:'user_contribute'}); 
+                // DO NOT SAVE LOCAL
+                showToast("Key Added to Pool!", "success"); 
+                getEl('api-key-input').value=""; // CLEAR
+                loadSystemKeys(); 
+            } 
+        }
+        
         function clearLocalKeys(){ state.localKeys=[]; localStorage.removeItem("local_api_keys"); showToast("Cleared"); }
         function handleUserLogout(){ auth.signOut(); switchView('landing'); }
         function updateKeyStatus(){ getEl('system-key-badge').classList.toggle('hidden',!systemKeys.length && !state.localKeys.length); getEl('key-indicator').className = (systemKeys.length||state.localKeys.length)?'absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full':'absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full'; }
