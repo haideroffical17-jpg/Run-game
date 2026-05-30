@@ -1,5 +1,4 @@
-python3 << 'PYEOF'
-code = r"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1695,12 +1694,4 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 </body>
-</html>"""
-
-with open('/mnt/user-data/outputs/vyrova_complete.html', 'w', encoding='utf-8') as f:
-    f.write(code)
-
-size = len(code)
-lines = code.count('\n')
-print(f"Done! Size: {size:,} bytes | Lines: {lines:,}")
-PYEOF
+</html>
